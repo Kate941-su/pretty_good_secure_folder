@@ -28,6 +28,9 @@ dependencies:
   # isar(NoSQL)
   isar: ^3.1.0+1
 
+  # Slider item
+  flutter_slidable: ^4.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
