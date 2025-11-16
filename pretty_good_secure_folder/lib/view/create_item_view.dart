@@ -1,8 +1,9 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
 import 'package:uuid/v4.dart';
 
 import '../model/error/app_error.dart';
@@ -11,18 +12,13 @@ import '../provider/vault_item_state.dart';
 import 'component/text_enter_field.dart';
 
 class CreateItemView extends HookConsumerWidget {
-  const CreateItemView({required this.id, super.key});
+  const CreateItemView({super.key});
 
-  final String id;
-  
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final keyController = TextEditingController();
     final valueController = TextEditingController();
-    final vaultItemHolder = ref.watch(vaultItemHolderStateProvider.select(
-            (it) => it.firstWhere((elem) {
-             return  elem.id == id;
-    })));
+    final nameController = TextEditingController();
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
 
     final keyStringError = useState<AppError?>(null);
@@ -30,13 +26,9 @@ class CreateItemView extends HookConsumerWidget {
 
     useEffect(() {
       return null;
-    }, [keyController.dispose, valueController.dispose]);
+    }, [keyController.dispose, valueController.dispose, nameController.dispose]);
 
-    final dataRowList = vaultItemHolder.itemList.map((item) => DataRow(cells: [
-      DataCell(Text(item.id)),
-      DataCell(Text(item.key)),
-      DataCell(Text(item.value)),
-    ]) ).toList();
+    final vaultItemList = useState<List<VaultItem>>([]);
 
     return Scaffold(
       appBar: AppBar(
@@ -48,7 +40,6 @@ class CreateItemView extends HookConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text("Title", style: TextStyle(fontSize: 28),),
               DataTable(
                 columns: const <DataColumn>[
                   DataColumn(
@@ -76,7 +67,11 @@ class CreateItemView extends HookConsumerWidget {
                     ),
                   ),
                 ],
-                rows: dataRowList,
+                rows: vaultItemList.value.map((it) => DataRow(cells: [
+                    DataCell(Text(it.id)),
+                  DataCell(Text(it.key)),
+                  DataCell(Text(it.value)),
+                  ])).toList(growable: false),
               ),
               TextEnterField(
                 title: "key",
@@ -114,8 +109,14 @@ class CreateItemView extends HookConsumerWidget {
                     return;
                   }
 
+                  final id = UuidV4().generate();
+                  vaultItemList.value = [...vaultItemList.value, VaultItem(
+                    key: keyController.text,
+                    value: valueController.text,
+                    id: UuidV4().generate(),
+                  )];                  
                   notifier.addVaultItem(
-                    holderId: vaultItemHolder.id,
+                    holderId: id,
                     item: VaultItem(
                       key: keyController.text,
                       value: valueController.text,
@@ -129,12 +130,9 @@ class CreateItemView extends HookConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all<Color>(
-                        Colors.blue,
-                      ),
-                    ),
-                    onPressed: () {},
+                    onPressed: () {
+                      context.pop();
+                    },
                     child: Text('Cancel', style: TextStyle(color: Colors.red)),
                   ),
                   TextButton(
@@ -143,7 +141,12 @@ class CreateItemView extends HookConsumerWidget {
                         Colors.blue,
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      final id = UuidV4().generate();
+                      notifier.addVaultItemHolder(itemHolder: VaultItemHolder(id: id,
+                          name: nameController.text,
+                          itemList: vaultItemList.value));
+                    },
                     child: Text('Save'),
                   ),
                 ],
