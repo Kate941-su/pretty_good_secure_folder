@@ -7,6 +7,7 @@ part 'vault_item_holder.freezed.dart';
 abstract class VaultItemHolder with _$VaultItemHolder {
   const factory VaultItemHolder({
     required String id,
+    required String name,
     required List<VaultItem> itemList,
   }) = _VaultItemHolder;
 }

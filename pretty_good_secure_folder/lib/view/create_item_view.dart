@@ -19,17 +19,20 @@ class CreateItemView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final keyController = TextEditingController();
     final valueController = TextEditingController();
-    final vaultItemHolderList = ref.watch(vaultItemHolderStateProvider.select((it) => it.i));
+    final vaultItemHolder = ref.watch(vaultItemHolderStateProvider.select(
+            (it) => it.firstWhere((elem) {
+             return  elem.id == id;
+    })));
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
 
     final keyStringError = useState<AppError?>(null);
-    final valueyStringError = useState<AppError?>(null);
+    final valueStringError = useState<AppError?>(null);
 
     useEffect(() {
       return null;
     }, [keyController.dispose, valueController.dispose]);
 
-    final dataRowList = vaultItemHolderList.itemList.map((item) => DataRow(cells: [
+    final dataRowList = vaultItemHolder.itemList.map((item) => DataRow(cells: [
       DataCell(Text(item.id)),
       DataCell(Text(item.key)),
       DataCell(Text(item.value)),
@@ -83,7 +86,7 @@ class CreateItemView extends HookConsumerWidget {
               TextEnterField(
                 title: "value",
                 controller: valueController,
-                error: valueyStringError.value,
+                error: valueStringError.value,
               ),
               TextButton(
                 style: ButtonStyle(
@@ -101,18 +104,19 @@ class CreateItemView extends HookConsumerWidget {
                   }
 
                   if (valueController.text.isEmpty) {
-                    valueyStringError.value = AppError.emptyString();
+                    valueStringError.value = AppError.emptyString();
                   } else {
-                    valueyStringError.value = null;
+                    valueStringError.value = null;
                   }
 
                   if (keyStringError.value != null ||
-                      valueyStringError.value != null) {
+                      valueStringError.value != null) {
                     return;
                   }
 
                   notifier.addVaultItem(
-                    vaultItem: VaultItem(
+                    holderId: vaultItemHolder.id,
+                    item: VaultItem(
                       key: keyController.text,
                       value: valueController.text,
                       id: UuidV4().generate(),

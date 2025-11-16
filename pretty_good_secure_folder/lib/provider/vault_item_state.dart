@@ -1,3 +1,4 @@
+import 'package:pretty_good_secure_folder/model/dummy/dummy_vault_item_holder.dart';
 import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,7 +15,7 @@ part 'vault_item_state.g.dart';
 class VaultItemHolderState extends _$VaultItemHolderState {
   @override
   List<VaultItemHolder> build() {
-    return [];
+    return dummyVaultItemHolders;
   }
   void addVaultItemHolder({required itemHolder}) {
     state = [...state, itemHolder];
