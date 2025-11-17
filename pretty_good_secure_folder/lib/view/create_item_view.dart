@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:pretty_good_secure_folder/extension/colors+_custom_color.dart';
 import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
 import 'package:uuid/v4.dart';
 
@@ -20,7 +21,6 @@ class CreateItemView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final keyController = TextEditingController();
     final valueController = TextEditingController();
-    final nameController = TextEditingController();
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
 
     final keyStringError = useState<AppError?>(null);
@@ -28,7 +28,7 @@ class CreateItemView extends HookConsumerWidget {
 
     useEffect(() {
       return null;
-    }, [keyController.dispose, valueController.dispose, nameController.dispose]);
+    }, [keyController.dispose, valueController.dispose]);
 
     final vaultItemList = useState<List<VaultItem>>([]);
 
@@ -144,12 +144,17 @@ class CreateItemView extends HookConsumerWidget {
                       ),
                     ),
                     onPressed: () {
-                      final id = UuidV4().generate();
-                      notifier.addVaultItemHolder(itemHolder: VaultItemHolder(id: id,
-                          name: nameController.text,
-                          itemList: vaultItemList.value));
+                      if (vaultItemList.value.isNotEmpty) {
+                        final id = UuidV4().generate();
+                        notifier.addVaultItemHolder(itemHolder: VaultItemHolder(id: id,
+                            name: name,
+                            itemList: vaultItemList.value));
+                        context.pop();
+                      }
                     },
-                    child: Text('Save'),
+                    child: Text('Save', style: TextStyle(
+                        color: vaultItemList.value.isEmpty ?
+                        CustomColors.disable : null),),
                   ),
                 ],
               ),

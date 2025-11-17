@@ -14,7 +14,6 @@ class SlideItemView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vaultItemHolderList = ref.watch(vaultItemHolderStateProvider);
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
-    final errorText = useState<String?>(null);
     return Scaffold(
       body: ListView(
         children: [
