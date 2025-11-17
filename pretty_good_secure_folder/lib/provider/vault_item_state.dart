@@ -49,5 +49,15 @@ class VaultItemHolderState extends _$VaultItemHolderState {
     }).toList();
   }
 
+  void editHolder({required VaultItemHolder holder}) {
+    state = state.map((item) {
+      if (item.id == holder.id) {
+        return holder;
+      } else {
+        return item;
+      }
+    }).toList();
+  }
+
 
 }

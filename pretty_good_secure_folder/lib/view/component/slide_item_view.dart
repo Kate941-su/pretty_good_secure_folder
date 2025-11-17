@@ -21,7 +21,7 @@ class SlideItemView extends HookConsumerWidget {
             SlidableItemWidget(
               vaultItemHolder: vaultItemHolder,
               onTapItem: (item) {
-                context.go('/edit/${vaultItemHolder.id}');
+                context.push('/edit/${vaultItemHolder.id}');
               },
               onTapDelete: (item) {
                 notifier.removeVaultItemHolder(id: vaultItemHolder.id);

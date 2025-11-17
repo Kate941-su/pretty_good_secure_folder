@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pretty_good_secure_folder/view/create_item_view.dart';
+import 'package:pretty_good_secure_folder/view/edit_item_view.dart';
 import 'package:pretty_good_secure_folder/view/main_view.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -20,8 +21,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/edit/:id',
         builder: (context, state) {
-          final name = state.pathParameters['name'] ?? "";
-          return CreateItemView(name: name,);
+          final id = state.pathParameters['id'] ?? "";
+          return EditItemView(id: id,);
         },
       ),
     ],
