@@ -12,11 +12,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/create/:name',
-        builder: (context, state) => CreateItemView(name: state.pathParameters['name']!),
+        builder: (context, state) {
+          final name = state.pathParameters['name'] ?? "";
+          return CreateItemView(name: name,);
+        },
       ),
       GoRoute(
         path: '/edit/:id',
-        builder: (context, state) => CreateItemView(id: state.pathParameters['id']!),
+        builder: (context, state) {
+          final name = state.pathParameters['name'] ?? "";
+          return CreateItemView(name: name,);
+        },
       ),
     ],
   );

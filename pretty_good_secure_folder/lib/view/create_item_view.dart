@@ -12,7 +12,9 @@ import '../provider/vault_item_state.dart';
 import 'component/text_enter_field.dart';
 
 class CreateItemView extends HookConsumerWidget {
-  const CreateItemView({super.key});
+  const CreateItemView({required this.name, super.key});
+
+  final String name;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +35,7 @@ class CreateItemView extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Create Vault Item"),
+        title: Text(name),
       ),
       body: SingleChildScrollView(
         child: Center(
