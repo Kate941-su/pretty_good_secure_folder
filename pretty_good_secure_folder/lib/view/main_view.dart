@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pretty_good_secure_folder/model/error/app_error.dart';
-import 'package:pretty_good_secure_folder/view/component/slide_item_view.dart';
+import 'package:pretty_good_secure_folder/view/slide_item_view.dart';
 
 class MainView extends HookConsumerWidget {
   const MainView({super.key});

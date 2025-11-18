@@ -13,6 +13,6 @@ final dummyVaultItemHolders = List.generate(
         key: 'key_${i}_$j',
         value: 'value_${i}_$j',
       ),
-    ),
+    ), updatedAt: DateTime.now(),
   ),
 );
