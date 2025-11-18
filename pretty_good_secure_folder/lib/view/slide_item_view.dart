@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pretty_good_secure_folder/extension/colors+_custom_color.dart';
+import 'package:pretty_good_secure_folder/model/toast.dart';
 import 'package:pretty_good_secure_folder/provider/regacy/create_vault_holder.dart';
+import 'package:pretty_good_secure_folder/provider/toast_trigger_provider.dart';
 import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
 import 'package:pretty_good_secure_folder/view/component/slidable_item_widget.dart';
+import 'package:toastification/toastification.dart';
 
 class SlideItemView extends HookConsumerWidget {
   const SlideItemView({super.key});
@@ -13,9 +17,23 @@ class SlideItemView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vaultItemHolderList = ref.watch(vaultItemHolderStateProvider);
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
+    final listener = ref.listen(toastTriggerProvider, (prev, next) {
+      if (next == null) return;
+      next.when(createVaultHolder: () {
+        toastification.show(
+            title: Text(getMessage(next)),
+            autoCloseDuration: const Duration(seconds: 5),
+            callbacks: ToastificationCallbacks(onDismissed:(_) {
+              ref.read(toastTriggerProvider.notifier).setToast(null);
+            }));
+        ref.read(toastTriggerProvider.notifier).setToast(null);
+      });
+    });
+
     return Scaffold(
       body: ListView(
         children: [
+
           for (var vaultItemHolder in vaultItemHolderList)
             SlidableItemWidget(
               vaultItemHolder: vaultItemHolder,

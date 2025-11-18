@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -78,9 +79,16 @@ class ItemHandleView extends HookConsumerWidget {
                   DataCell(Text(it.key)),
                   DataCell(Text(it.value)),
                   DataCell(Row(children: [
-                    IconButton(onPressed: (){}, icon: const Icon(Icons.edit)),
-                    IconButton(onPressed: (){}, icon: const Icon(Icons.copy)),
-                    IconButton(onPressed: (){}, icon: const Icon(Icons.delete))
+                    // TODO: implement edit
+                    // IconButton(onPressed: (){
+                    //
+                    // }, icon: const Icon(Icons.edit)),
+                    IconButton(onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: it.value));
+                    }, icon: const Icon(Icons.copy)),
+                    IconButton(onPressed: (){
+
+                    }, icon: const Icon(Icons.delete))
                   ],)),
                 ])).toList(growable: false),
               ),

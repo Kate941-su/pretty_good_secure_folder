@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:pretty_good_secure_folder/model/toast.dart';
 import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
+import 'package:pretty_good_secure_folder/provider/toast_trigger_provider.dart';
 import 'package:pretty_good_secure_folder/view/component/item_handle_view.dart';
 import 'package:uuid/v4.dart';
 import '../provider/vault_item_state.dart';
@@ -35,6 +37,7 @@ class CreateItemView extends HookConsumerWidget {
               itemList: itemList,
             ),
           );
+          ref.read(toastTriggerProvider.notifier).setToast(CreateVaultHolder());
           context.pop();
         }
       },
