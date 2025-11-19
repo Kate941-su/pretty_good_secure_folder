@@ -153,7 +153,7 @@ class ItemHandleView extends HookConsumerWidget {
                     VaultItem(
                       key: keyController.text,
                       value: valueController.text,
-                      id: UuidV4().generate(),
+                      id: UuidV4().generate().hashCode,
                     ),
                   ];
                   notifier.addVaultItem(
@@ -161,7 +161,7 @@ class ItemHandleView extends HookConsumerWidget {
                     item: VaultItem(
                       key: keyController.text,
                       value: valueController.text,
-                      id: UuidV4().generate(),
+                      id: UuidV4().generate().hashCode,
                     ),
                   );
                 },

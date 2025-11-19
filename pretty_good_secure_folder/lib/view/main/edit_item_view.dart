@@ -8,15 +8,15 @@ import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
 import 'package:pretty_good_secure_folder/view/component/item_handle_view.dart';
 import 'package:uuid/v4.dart';
 
-import '../model/error/app_error.dart';
-import '../model/vault_item.dart';
-import '../provider/vault_item_state.dart';
-import 'component/text_enter_field.dart';
+import '../../model/error/app_error.dart';
+import '../../model/vault_item.dart';
+import '../../provider/vault_item_state.dart';
+import '../component/text_enter_field.dart';
 
 class EditItemView extends HookConsumerWidget {
   const EditItemView({required this.id, super.key});
 
-  final String id;
+  final int id;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

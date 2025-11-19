@@ -6,9 +6,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pretty_good_secure_folder/model/toast.dart';
 import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
 import 'package:pretty_good_secure_folder/provider/toast_trigger_provider.dart';
+import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
 import 'package:pretty_good_secure_folder/view/component/item_handle_view.dart';
 import 'package:uuid/v4.dart';
-import '../provider/vault_item_state.dart';
 
 class CreateItemView extends HookConsumerWidget {
   const CreateItemView({required this.name, super.key});
@@ -28,7 +28,7 @@ class CreateItemView extends HookConsumerWidget {
       defaultItemList: [],
       onSave: (itemList) {
         if (itemList.isNotEmpty) {
-          final id = UuidV4().generate();
+          final id = UuidV4().generate().hashCode;
           notifier.addVaultItemHolder(
             itemHolder: VaultItemHolder(
               id: id,
