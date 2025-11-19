@@ -20,12 +20,12 @@ class ItemHandleView extends HookConsumerWidget {
     required this.defaultItemList,
     required this.name,
     required this.onSave,
-    super.key});
+    super.key,
+  });
 
   final Function(List<VaultItem>) onSave;
   final String name;
   final List<VaultItem> defaultItemList;
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -69,28 +69,44 @@ class ItemHandleView extends HookConsumerWidget {
                       ),
                     ),
                   ),
-                  DataColumn(
-                    label: Expanded(
-                      child: Text(""),
-                    ),
-                  ),
+                  DataColumn(label: Expanded(child: Text(""))),
                 ],
-                rows: vaultItemList.value.map((it) => DataRow(cells: [
-                  DataCell(Text(it.key)),
-                  DataCell(Text(it.value)),
-                  DataCell(Row(children: [
-                    // TODO: implement edit
-                    // IconButton(onPressed: (){
-                    //
-                    // }, icon: const Icon(Icons.edit)),
-                    IconButton(onPressed: () async {
-                      await Clipboard.setData(ClipboardData(text: it.value));
-                    }, icon: const Icon(Icons.copy)),
-                    IconButton(onPressed: (){
-
-                    }, icon: const Icon(Icons.delete))
-                  ],)),
-                ])).toList(growable: false),
+                rows: vaultItemList.value
+                    .map(
+                      (it) => DataRow(
+                        cells: [
+                          DataCell(Text(it.key)),
+                          DataCell(Text(it.value)),
+                          DataCell(
+                            Row(
+                              children: [
+                                // TODO: implement edit
+                                // IconButton(onPressed: (){
+                                //
+                                // }, icon: const Icon(Icons.edit)),
+                                IconButton(
+                                  onPressed: () async {
+                                    await Clipboard.setData(
+                                      ClipboardData(text: it.value),
+                                    );
+                                  },
+                                  icon: Icon(Icons.copy, color: CustomColors.copy,),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    vaultItemList.value = vaultItemList.value
+                                        .where((element) => element.id != it.id)
+                                        .toList();
+                                  },
+                                  icon: Icon(Icons.delete, color: CustomColors.warning,),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    .toList(growable: false),
               ),
               TextEnterField(
                 title: "key",
@@ -113,7 +129,9 @@ class ItemHandleView extends HookConsumerWidget {
                     keyStringError.value = AppError.emptyString();
                   } else if (keyController.text.contains(" ")) {
                     keyStringError.value = AppError.keyStringError();
-                  } else if (vaultItemList.value.any((it) => it.key == keyController.text)){
+                  } else if (vaultItemList.value.any(
+                    (it) => it.key == keyController.text,
+                  )) {
                     keyStringError.value = AppError.keyDupulicateError();
                   } else {
                     keyStringError.value = null;
@@ -130,11 +148,14 @@ class ItemHandleView extends HookConsumerWidget {
                     return;
                   }
                   final id = UuidV4().generate();
-                  vaultItemList.value = [...vaultItemList.value, VaultItem(
-                    key: keyController.text,
-                    value: valueController.text,
-                    id: UuidV4().generate(),
-                  )];
+                  vaultItemList.value = [
+                    ...vaultItemList.value,
+                    VaultItem(
+                      key: keyController.text,
+                      value: valueController.text,
+                      id: UuidV4().generate(),
+                    ),
+                  ];
                   notifier.addVaultItem(
                     holderId: id,
                     item: VaultItem(
@@ -164,9 +185,14 @@ class ItemHandleView extends HookConsumerWidget {
                     onPressed: () {
                       onSave(vaultItemList.value);
                     },
-                    child: Text('Save', style: TextStyle(
-                        color: vaultItemList.value.isEmpty ?
-                        CustomColors.disable : null),),
+                    child: Text(
+                      'Save',
+                      style: TextStyle(
+                        color: vaultItemList.value.isEmpty
+                            ? CustomColors.disable
+                            : null,
+                      ),
+                    ),
                   ),
                 ],
               ),

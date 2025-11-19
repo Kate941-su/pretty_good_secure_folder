@@ -30,7 +30,7 @@ class VaultItemHolderState extends _$VaultItemHolderState {
     }).toList();
   }
 
-  void removeItem({required holderId, required itemId}) {
+  void removeItem({required String holderId, required String itemId}) {
     state = state.map((element) {
       if (element.id == holderId) {
         return element.copyWith(
