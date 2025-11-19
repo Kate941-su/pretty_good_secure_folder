@@ -113,6 +113,8 @@ class ItemHandleView extends HookConsumerWidget {
                     keyStringError.value = AppError.emptyString();
                   } else if (keyController.text.contains(" ")) {
                     keyStringError.value = AppError.keyStringError();
+                  } else if (vaultItemList.value.any((it) => it.key == keyController.text)){
+                    keyStringError.value = AppError.keyDupulicateError();
                   } else {
                     keyStringError.value = null;
                   }
@@ -127,7 +129,6 @@ class ItemHandleView extends HookConsumerWidget {
                       valueStringError.value != null) {
                     return;
                   }
-
                   final id = UuidV4().generate();
                   vaultItemList.value = [...vaultItemList.value, VaultItem(
                     key: keyController.text,

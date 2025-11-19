@@ -30,7 +30,9 @@ class TextEnterField extends HookConsumerWidget {
               labelText: 'Enter the Value',
               errorText: error?.when(
                   keyStringError: () => "Key must not contain white space",
-                  emptyString: () => "Empty string is not allowed"),
+                  emptyString: () => "Empty string is not allowed",
+                  keyDupulicateError: () => "Key already exists"
+              ),
             ),
             onSubmitted: (String value) async {},
           ),
