@@ -24,5 +24,4 @@ abstract class VaultItemHolder with _$VaultItemHolder {
     h.itemIdList = itemList.map((e) => e.id).toList();
     return h;
   }
-
 }

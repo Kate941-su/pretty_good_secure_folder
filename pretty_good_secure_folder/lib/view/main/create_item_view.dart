@@ -28,10 +28,10 @@ class CreateItemView extends HookConsumerWidget {
       defaultItemList: [],
       onSave: (itemList) {
         if (itemList.isNotEmpty) {
-          final id = UuidV4().generate().hashCode;
+          final holderId = UuidV4().generate().hashCode;
           notifier.addVaultItemHolder(
             itemHolder: VaultItemHolder(
-              id: id,
+              id: holderId,
               updatedAt: DateTime.now(),
               name: name,
               itemList: itemList,

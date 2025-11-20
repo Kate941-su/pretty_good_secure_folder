@@ -1,5 +1,4 @@
 import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
-import 'package:pretty_good_secure_folder/provider/db_handler.dart';
 import 'package:pretty_good_secure_folder/repository/vault_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,47 +18,22 @@ class VaultItemHolderState extends _$VaultItemHolderState {
   }
 
   void addVaultItemHolder({required VaultItemHolder itemHolder}) {
-    final previousState = state; // Get current list
-    if (previousState != null) {
-      // Wrap the new list in AsyncData
-      state = [...previousState, itemHolder];
-    }
+    final previousState = state;
+    final vaultRepository = ref.read(vaultRepositoryProvider.notifier);
+    vaultRepository.addVaultItemHolder(itemHolder);
+    state = [...previousState, itemHolder];
   }
 
   void removeVaultItemHolder({required int id}) {
+    final vaultRepository = ref.read(vaultRepositoryProvider.notifier);
     final previousState = state;
-    if (previousState != null) {
-      state = previousState.where((element) => element.id != id).toList();
-    }
-  }
-
-  void addVaultItem({required int holderId, required dynamic item}) {
-    final previousState = state;
-    final newList = previousState.map((element) {
-      if (element.id == holderId) {
-        return element.copyWith(itemList: [...element.itemList, item]);
-      }
-      return element;
-    }).toList();
-      state = newList;
-  }
-
-  void removeItem({required int holderId, required String itemId}) {
-    final previousState = state;
-    final newList = previousState.map((element) {
-      if (element.id == holderId) {
-        return element.copyWith(
-          itemList: element.itemList
-              .where((element) => element.id != itemId)
-              .toList(),
-        );
-      }
-      return element;
-    }).toList();
-      state = newList;
+    final removedHolder = previousState.firstWhere((element) => element.id == id);
+    state = previousState.where((element) => element.id != id).toList();
+    vaultRepository.deleteVaultItemHolder(removedHolder);
   }
 
   void editHolder({required VaultItemHolder holder}) {
+    final vaultRepository = ref.read(vaultRepositoryProvider.notifier);
     final previousState = state;
     final newList = previousState.map((item) {
       if (item.id == holder.id) {
@@ -67,6 +41,7 @@ class VaultItemHolderState extends _$VaultItemHolderState {
       }
       return item;
     }).toList();
-      state = newList;
+    vaultRepository.editVaultItemHolder(holder);
+    state = newList;
   }
 }

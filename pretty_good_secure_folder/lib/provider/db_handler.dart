@@ -8,7 +8,7 @@ import '../database/entity/item_schema.dart';
 part 'db_handler.g.dart';
 
 // Provider for storing measurements
-@riverpod
+@Riverpod(keepAlive: true)
 class DbHandler extends _$DbHandler {
 
   @override

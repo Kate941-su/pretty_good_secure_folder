@@ -150,17 +150,9 @@ class ItemHandleView extends HookConsumerWidget {
                     VaultItem(
                       key: keyController.text,
                       value: valueController.text,
-                      id: UuidV4().generate().hashCode,
+                      id: id,
                     ),
                   ];
-                  notifier.addVaultItem(
-                    holderId: id,
-                    item: VaultItem(
-                      key: keyController.text,
-                      value: valueController.text,
-                      id: UuidV4().generate().hashCode,
-                    ),
-                  );
                 },
                 child: Text('Add'),
               ),

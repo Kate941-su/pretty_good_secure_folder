@@ -15,7 +15,7 @@ abstract class VaultItem with _$VaultItem {
 
   Item toItemSchema() {
     Item i = Item();
-    i.id = id.hashCode;
+    i.id = id;
     i.key = key;
     i.value = value;
     return i;

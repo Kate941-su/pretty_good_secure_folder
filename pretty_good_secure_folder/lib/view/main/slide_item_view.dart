@@ -18,7 +18,6 @@ class SlideItemView extends HookConsumerWidget {
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
     final listener = ref.listen(toastTriggerProvider, (prev, next) {
       if (next == null) return;
-      next.when(createVaultHolder: () {
         toastification.show(
             title: Text(getMessage(next)),
             autoCloseDuration: const Duration(seconds: 5),
@@ -26,7 +25,6 @@ class SlideItemView extends HookConsumerWidget {
               ref.read(toastTriggerProvider.notifier).setToast(null);
             }));
         ref.read(toastTriggerProvider.notifier).setToast(null);
-      });
     });
 
     return Scaffold(
