@@ -5,75 +5,68 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'vault_item_state.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class VaultItemHolderState extends _$VaultItemHolderState {
   @override
-  Future<List<VaultItemHolder>> build() async {
+  List<VaultItemHolder> build() {
+    return [];
+  }
+
+  Future<void> initialize() async {
     final vaultRepository = ref.read(vaultRepositoryProvider.notifier);
     final holders = await vaultRepository.readVaultItemHolders();
-    return holders;
+    state = holders;
   }
 
   void addVaultItemHolder({required VaultItemHolder itemHolder}) {
-    final previousState = state.value; // Get current list
+    final previousState = state; // Get current list
     if (previousState != null) {
       // Wrap the new list in AsyncData
-      state = AsyncData([...previousState, itemHolder]);
+      state = [...previousState, itemHolder];
     }
   }
 
-  void removeVaultItemHolder({required String id}) {
-    final previousState = state.value;
+  void removeVaultItemHolder({required int id}) {
+    final previousState = state;
     if (previousState != null) {
-      state = AsyncData(
-        previousState.where((element) => element.id != id).toList(),
-      );
+      state = previousState.where((element) => element.id != id).toList();
     }
   }
 
-  void addVaultItem({required String holderId, required dynamic item}) {
-    final previousState = state.value;
-    if (previousState != null) {
-      final newList = previousState.map((element) {
-        if (element.id == holderId) {
-          return element.copyWith(itemList: [...element.itemList, item]);
-        }
-        return element;
-      }).toList();
-
-      state = AsyncData(newList);
-    }
+  void addVaultItem({required int holderId, required dynamic item}) {
+    final previousState = state;
+    final newList = previousState.map((element) {
+      if (element.id == holderId) {
+        return element.copyWith(itemList: [...element.itemList, item]);
+      }
+      return element;
+    }).toList();
+      state = newList;
   }
 
-  void removeItem({required String holderId, required String itemId}) {
-    final previousState = state.value;
-    if (previousState != null) {
-      final newList = previousState.map((element) {
-        if (element.id == holderId) {
-          return element.copyWith(
-            itemList: element.itemList
-                .where((element) => element.id != itemId)
-                .toList(),
-          );
-        }
-        return element;
-      }).toList();
-
-      state = AsyncData(newList);
-    }
+  void removeItem({required int holderId, required String itemId}) {
+    final previousState = state;
+    final newList = previousState.map((element) {
+      if (element.id == holderId) {
+        return element.copyWith(
+          itemList: element.itemList
+              .where((element) => element.id != itemId)
+              .toList(),
+        );
+      }
+      return element;
+    }).toList();
+      state = newList;
   }
 
   void editHolder({required VaultItemHolder holder}) {
-    final previousState = state.value;
-    if (previousState != null) {
-      final newList = previousState.map((item) {
-        if (item.id == holder.id) {
-          return holder;
-        }
-        return item;
-      }).toList();
-
-      state = AsyncData(newList);
-    }
+    final previousState = state;
+    final newList = previousState.map((item) {
+      if (item.id == holder.id) {
+        return holder;
+      }
+      return item;
+    }).toList();
+      state = newList;
   }
 }

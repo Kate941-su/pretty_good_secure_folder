@@ -3,15 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:pretty_good_secure_folder/extension/colors+_custom_color.dart';
 import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
 import 'package:pretty_good_secure_folder/view/component/item_handle_view.dart';
-import 'package:uuid/v4.dart';
-
-import '../../model/error/app_error.dart';
-import '../../model/vault_item.dart';
 import '../../provider/vault_item_state.dart';
-import '../component/text_enter_field.dart';
 
 class EditItemView extends HookConsumerWidget {
   const EditItemView({required this.id, super.key});
