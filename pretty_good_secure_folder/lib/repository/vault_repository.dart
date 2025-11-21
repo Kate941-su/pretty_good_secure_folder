@@ -11,7 +11,7 @@ import '../database/entity/item_schema.dart';
 part 'vault_repository.g.dart';
 
 // Provider for storing measurements
-@riverpod
+@Riverpod(keepAlive: true)
 class VaultRepository extends _$VaultRepository {
   @override
   void build() {
@@ -20,12 +20,10 @@ class VaultRepository extends _$VaultRepository {
 
   // ADD
   Future<void> addVaultItemHolder(VaultItemHolder holder) async {
-    final dbNotifier = ref.watch(dbHandlerProvider.notifier);
+    final dbNotifier = ref.read(dbHandlerProvider.notifier);
     Future.wait([
       ...holder.itemList.map((it) async {
-        final publicKey = ref.watch(
-          userStateProvider.select((it) => it.publicKey),
-        );
+        final publicKey = ref.read(userStateProvider.select((it) => it.publicKey),);
         final item = await it.toItemSchemaWithEncryption(publicKey);
         await dbNotifier.writeItem(item);
       }),
@@ -35,8 +33,8 @@ class VaultRepository extends _$VaultRepository {
 
   // UPDATE
   Future<void> editVaultItemHolder(VaultItemHolder holder) async {
-    final dbNotifier = ref.watch(dbHandlerProvider.notifier);
-    final publicKey = ref.watch(userStateProvider.select((it) => it.publicKey));
+    final dbNotifier = ref.read(dbHandlerProvider.notifier);
+    final publicKey = ref.read(userStateProvider.select((it) => it.publicKey));
     List<Item> list = [];
     for (final item in holder.itemList) {
       final itemSchema = await item.toItemSchemaWithEncryption(publicKey);
@@ -50,8 +48,8 @@ class VaultRepository extends _$VaultRepository {
 
   // DELETE
   Future<void> deleteVaultItemHolder(VaultItemHolder holder) async {
-    final dbNotifier = ref.watch(dbHandlerProvider.notifier);
-    final publicKey = ref.watch(userStateProvider.select((it) => it.publicKey));
+    final dbNotifier = ref.read(dbHandlerProvider.notifier);
+    final publicKey = ref.read(userStateProvider.select((it) => it.publicKey));
     List<Item> list = [];
     for (final item in holder.itemList) {
       final itemSchema = await item.toItemSchemaWithEncryption(publicKey);
@@ -85,9 +83,7 @@ class VaultRepository extends _$VaultRepository {
                   if (itemSchema == null) {
                     return null;
                   } else {
-                    final privateKey = ref.watch(
-                      userStateProvider.select((it) => it.privateKey),
-                    );
+                    final privateKey = ref.read(userStateProvider.select((it) => it.privateKey),);
                     final item = await itemSchema.toItemWithDecryption(
                       privateKey,
                     );

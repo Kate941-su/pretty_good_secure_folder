@@ -14,19 +14,12 @@ abstract class VaultItem with _$VaultItem {
     required String value,
   }) = _VaultItem;
 
-  // Item toItemSchema() {
-  //   Item i = Item();
-  //   i.id = id;
-  //   i.key = key;
-  //   i.value = value;
-  //   return i;
-  // }
-
   Future<Item> toItemSchemaWithEncryption(String publicKey) async {
     final encryptedValue = await OpenPGP.encrypt(value, publicKey);
+    final encryptedKey = await OpenPGP.encrypt(key, publicKey);
     Item i = Item();
     i.id = id;
-    i.key = key;
+    i.key = encryptedKey;
     i.value = encryptedValue;
     return i;
   }

@@ -14,9 +14,10 @@ class Item {
 
   Future<VaultItem> toItemWithDecryption(String privateKey) async {
     // TODO: Passphrase feature
+    final decryptedKey = await OpenPGP.decrypt(key!, privateKey, "");
     final decryptedValue = await OpenPGP.decrypt(value!, privateKey, "");
     return VaultItem(id: id!,
-        key: key!,
+        key: decryptedKey,
         value: decryptedValue);
   }
 }

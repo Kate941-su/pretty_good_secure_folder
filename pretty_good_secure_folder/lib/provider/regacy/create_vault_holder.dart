@@ -14,3 +14,19 @@ class EnterVaultNameNotifier extends Notifier<String?> {
     state = value;
   }
 }
+
+class TextNotifier extends Notifier<String?> {
+
+  TextNotifier(this.text);
+
+  final String? text;
+
+  @override
+  String? build() {
+    return text;
+  }
+
+  void setValue(String? value) {
+    state = value;
+  }
+}

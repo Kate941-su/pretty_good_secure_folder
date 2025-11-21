@@ -13,16 +13,11 @@ class SplashView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     useEffect((){
-      Future.wait([
-        ref.read(vaultItemHolderStateProvider.notifier)
-            .initialize(),
-        ref.read(sharedPreferenceServiceProvider.notifier).initialize()
-      ]).then((_) {
-        ref.read(userStateProvider.notifier).initialize().then((_) {
-          if (context.mounted) {
-            context.go("/main");
-          }
-        });
+      Future(() async {
+        await ref.read(sharedPreferenceServiceProvider.notifier).initialize();
+        await ref.read(userStateProvider.notifier).initialize();
+        await ref.read(vaultItemHolderStateProvider.notifier).initialize();
+        if (context.mounted) { context.go("/main"); }
       });
       return null;
     },[]);
