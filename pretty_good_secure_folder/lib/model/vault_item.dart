@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:isar_community/isar.dart';
+import 'package:openpgp/openpgp.dart';
 import 'package:pretty_good_secure_folder/database/entity/item_schema.dart';
 
 part 'vault_item.freezed.dart';
@@ -13,11 +14,20 @@ abstract class VaultItem with _$VaultItem {
     required String value,
   }) = _VaultItem;
 
-  Item toItemSchema() {
+  // Item toItemSchema() {
+  //   Item i = Item();
+  //   i.id = id;
+  //   i.key = key;
+  //   i.value = value;
+  //   return i;
+  // }
+
+  Future<Item> toItemSchemaWithEncryption(String publicKey) async {
+    final encryptedValue = await OpenPGP.encrypt(value, publicKey);
     Item i = Item();
     i.id = id;
     i.key = key;
-    i.value = value;
+    i.value = encryptedValue;
     return i;
   }
 

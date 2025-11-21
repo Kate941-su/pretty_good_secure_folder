@@ -1,8 +1,12 @@
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pretty_good_secure_folder/model/vault_item.dart';
 import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
+import 'package:pretty_good_secure_folder/provider/user_state.dart';
 import 'package:pretty_good_secure_folder/service/db_handler.dart';
 import 'package:pretty_good_secure_folder/util/Util.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../database/entity/item_schema.dart';
 
 part 'vault_repository.g.dart';
 
@@ -19,7 +23,11 @@ class VaultRepository extends _$VaultRepository {
     final dbNotifier = ref.watch(dbHandlerProvider.notifier);
     Future.wait([
       ...holder.itemList.map((it) async {
-        await dbNotifier.writeItem(it.toItemSchema());
+        final publicKey = ref.watch(
+          userStateProvider.select((it) => it.publicKey),
+        );
+        final item = await it.toItemSchemaWithEncryption(publicKey);
+        await dbNotifier.writeItem(item);
       }),
       dbNotifier.writeHolder(holder.toHolderSchema()),
     ]);
@@ -28,22 +36,30 @@ class VaultRepository extends _$VaultRepository {
   // UPDATE
   Future<void> editVaultItemHolder(VaultItemHolder holder) async {
     final dbNotifier = ref.watch(dbHandlerProvider.notifier);
+    final publicKey = ref.watch(userStateProvider.select((it) => it.publicKey));
+    List<Item> list = [];
+    for (final item in holder.itemList) {
+      final itemSchema = await item.toItemSchemaWithEncryption(publicKey);
+      list.add(itemSchema);
+    }
     Future.wait([
       dbNotifier.editHolder(holder.toHolderSchema()),
-      dbNotifier.editItems(
-        holder.itemList.map((it) => it.toItemSchema()).toList(),
-      ),
+      dbNotifier.editItems(list),
     ]);
   }
 
   // DELETE
   Future<void> deleteVaultItemHolder(VaultItemHolder holder) async {
     final dbNotifier = ref.watch(dbHandlerProvider.notifier);
+    final publicKey = ref.watch(userStateProvider.select((it) => it.publicKey));
+    List<Item> list = [];
+    for (final item in holder.itemList) {
+      final itemSchema = await item.toItemSchemaWithEncryption(publicKey);
+      list.add(itemSchema);
+    }
     Future.wait([
       dbNotifier.deleteHolder(holder.toHolderSchema()),
-      dbNotifier.deleteItems(
-        holder.itemList.map((it) => it.toItemSchema()).toList(),
-      ),
+      dbNotifier.deleteItems(list),
     ]);
   }
 
@@ -69,11 +85,13 @@ class VaultRepository extends _$VaultRepository {
                   if (itemSchema == null) {
                     return null;
                   } else {
-                    return VaultItem(
-                      id: itemSchema.id!,
-                      key: itemSchema.key!,
-                      value: itemSchema.value!,
+                    final privateKey = ref.watch(
+                      userStateProvider.select((it) => it.privateKey),
                     );
+                    final item = await itemSchema.toItemWithDecryption(
+                      privateKey,
+                    );
+                    return item;
                   }
                 }),
               );

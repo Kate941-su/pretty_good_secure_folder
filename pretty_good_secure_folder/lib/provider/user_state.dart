@@ -34,4 +34,6 @@ class UserState extends _$UserState {
     }
     state = User(publicKey: publicKey, privateKey: privateKey);
   }
+
+
 }

@@ -77,9 +77,8 @@ class DbHandler extends _$DbHandler {
 
   Future<void> deleteItems(List<Item> items) async {
     final isar = ref.watch(isarProvider);
-
     await isar.writeTxn(() async {
-      await isar.holders.deleteAll(items.map((e) => e.id!).toList());
+      await isar.items.deleteAll(items.map((e) => e.id!).toList());
     });
   }
 
