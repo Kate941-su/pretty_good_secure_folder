@@ -5,8 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pretty_good_secure_folder/database/entity/holder_schema.dart';
 import 'package:pretty_good_secure_folder/database/entity/item_schema.dart';
 import 'package:pretty_good_secure_folder/go_router/go_router_manager.dart';
-import 'package:pretty_good_secure_folder/provider/db_handler.dart';
-import 'package:pretty_good_secure_folder/provider/isar_service.dart';
+import 'package:pretty_good_secure_folder/service/isar_service.dart';
 import 'package:toastification/toastification.dart';
 
 void main() async {

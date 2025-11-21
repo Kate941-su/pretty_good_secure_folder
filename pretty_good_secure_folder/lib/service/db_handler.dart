@@ -1,9 +1,9 @@
 import 'package:isar_community/isar.dart';
-import 'package:pretty_good_secure_folder/provider/isar_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/entity/holder_schema.dart';
 import '../database/entity/item_schema.dart';
+import 'isar_service.dart';
 
 part 'db_handler.g.dart';
 

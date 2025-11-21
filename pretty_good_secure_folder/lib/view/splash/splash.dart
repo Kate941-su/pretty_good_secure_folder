@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
+import 'package:pretty_good_secure_folder/service/shared_preference_service.dart';
 
 class SplashView extends HookConsumerWidget {
   const SplashView({super.key});
@@ -11,9 +12,11 @@ class SplashView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     useEffect((){
-      ref.read(vaultItemHolderStateProvider.notifier)
-          .initialize()
-          .then((value) {
+      Future.wait([
+        ref.read(vaultItemHolderStateProvider.notifier)
+            .initialize(),
+        ref.read(sharedPreferenceServiceProvider.notifier).initialize()
+      ]).then((_) {
         if (context.mounted) {
           context.go("/main");
         }

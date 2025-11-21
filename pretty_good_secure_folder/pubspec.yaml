@@ -38,6 +38,12 @@ dependencies:
 
   intl: ^0.20.2
 
+  # shared_preferences
+  shared_preferences: ^2.5.3
+
+  # pgp
+  openpgp: ^3.10.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

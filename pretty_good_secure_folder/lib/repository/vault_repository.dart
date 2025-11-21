@@ -1,6 +1,6 @@
 import 'package:pretty_good_secure_folder/model/vault_item.dart';
 import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
-import 'package:pretty_good_secure_folder/provider/db_handler.dart';
+import 'package:pretty_good_secure_folder/service/db_handler.dart';
 import 'package:pretty_good_secure_folder/util/Util.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
