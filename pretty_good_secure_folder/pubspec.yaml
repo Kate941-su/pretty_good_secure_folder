@@ -44,6 +44,9 @@ dependencies:
   # pgp
   openpgp: ^3.10.7
 
+  # logger
+  logger: ^2.6.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

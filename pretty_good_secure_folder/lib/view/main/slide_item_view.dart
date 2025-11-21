@@ -1,10 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:pretty_good_secure_folder/extension/colors+_custom_color.dart';
 import 'package:pretty_good_secure_folder/model/toast.dart';
 import 'package:pretty_good_secure_folder/provider/regacy/create_vault_holder.dart';
 import 'package:pretty_good_secure_folder/provider/toast_trigger_provider.dart';
+import 'package:pretty_good_secure_folder/provider/user_state.dart';
 import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
 import 'package:pretty_good_secure_folder/view/component/slidable_item_widget.dart';
 import 'package:toastification/toastification.dart';
@@ -55,6 +58,23 @@ class SlideItemView extends HookConsumerWidget {
             },
             child: Text("Create New Vault"),
           ),
+          if (kDebugMode)
+            Column(children: [
+              TextButton(
+                onPressed: () {
+                  ref.watch(userStateProvider);
+                  Logger().i(ref.watch(userStateProvider.select((it) => it.privateKey)));
+                },
+                child: Text("Show private key"),
+              ),
+              TextButton(
+                onPressed: () {
+                  ref.watch(userStateProvider);
+                  Logger().i(ref.watch(userStateProvider.select((it) => it.publicKey)));
+                },
+                child: Text("Show public key"),
+              )
+            ],)
         ],
       ),
     );

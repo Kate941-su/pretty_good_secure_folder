@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:pretty_good_secure_folder/provider/user_state.dart';
 import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
 import 'package:pretty_good_secure_folder/service/shared_preference_service.dart';
 
@@ -17,9 +18,11 @@ class SplashView extends HookConsumerWidget {
             .initialize(),
         ref.read(sharedPreferenceServiceProvider.notifier).initialize()
       ]).then((_) {
-        if (context.mounted) {
-          context.go("/main");
-        }
+        ref.read(userStateProvider.notifier).initialize().then((_) {
+          if (context.mounted) {
+            context.go("/main");
+          }
+        });
       });
       return null;
     },[]);

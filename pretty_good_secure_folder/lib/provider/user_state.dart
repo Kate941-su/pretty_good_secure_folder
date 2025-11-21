@@ -8,7 +8,7 @@ import '../model/shared_preferences_key.dart';
 part 'user_state.g.dart';
 
 // Provider for storing measurements
-@riverpod
+@Riverpod(keepAlive: true)
 class UserState extends _$UserState {
   @override
   User build() {
@@ -16,9 +16,9 @@ class UserState extends _$UserState {
   }
 
   Future<void> initialize() async {
-    final pref = ref.watch(sharedPreferenceServiceProvider);
-    String? publicKey = pref?.getString(SharedPreferencesKey.publicKey().key);
-    String? privateKey = pref?.getString(SharedPreferencesKey.privateKey().key);
+    final pref = ref.read(sharedPreferenceServiceProvider.notifier).shared;
+    String? publicKey = pref.getString(SharedPreferencesKey.publicKey().key);
+    String? privateKey = pref.getString(SharedPreferencesKey.privateKey().key);
     if (publicKey == null || privateKey == null) {
       var keyOptions = KeyOptions()
         ..rsaBits = 2048;
@@ -27,8 +27,11 @@ class UserState extends _$UserState {
             ..keyOptions = keyOptions);
       publicKey = keyPair.publicKey;
       privateKey = keyPair.privateKey;
+      await Future.wait([
+          pref.setString(SharedPreferencesKey.privateKey().key, privateKey),
+          pref.setString(SharedPreferencesKey.publicKey().key, publicKey),
+      ]);
     }
     state = User(publicKey: publicKey, privateKey: privateKey);
   }
-
 }
