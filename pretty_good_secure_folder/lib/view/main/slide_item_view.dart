@@ -18,19 +18,21 @@ class SlideItemView extends HookConsumerWidget {
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
     final listener = ref.listen(toastTriggerProvider, (prev, next) {
       if (next == null) return;
-        toastification.show(
-            title: Text(getMessage(next)),
-            autoCloseDuration: const Duration(seconds: 5),
-            callbacks: ToastificationCallbacks(onDismissed:(_) {
-              ref.read(toastTriggerProvider.notifier).setToast(null);
-            }));
-        ref.read(toastTriggerProvider.notifier).setToast(null);
+      toastification.show(
+        title: Text(getMessage(next)),
+        autoCloseDuration: const Duration(seconds: 5),
+        callbacks: ToastificationCallbacks(
+          onDismissed: (_) {
+            ref.read(toastTriggerProvider.notifier).setToast(null);
+          },
+        ),
+      );
+      ref.read(toastTriggerProvider.notifier).setToast(null);
     });
 
     return Scaffold(
       body: ListView(
         children: [
-
           for (var vaultItemHolder in vaultItemHolderList)
             SlidableItemWidget(
               vaultItemHolder: vaultItemHolder,
@@ -38,13 +40,18 @@ class SlideItemView extends HookConsumerWidget {
                 context.push('/edit/${vaultItemHolder.id}');
               },
               onTapDelete: (item) {
-                notifier.removeVaultItemHolder(id: vaultItemHolder.id);
+                _deleteConfirmationDialogBuilder(
+                  context,
+                  vaultItemHolder.name,
+                  () {
+                    notifier.removeVaultItemHolder(id: vaultItemHolder.id);
+                  },
+                );
               },
             ),
           TextButton(
             onPressed: () {
-              _dialogBuilder(context,);
-              // context.push('/create');
+              _createHolderDialogBuilder(context);
             },
             child: Text("Create New Vault"),
           ),
@@ -53,7 +60,53 @@ class SlideItemView extends HookConsumerWidget {
     );
   }
 
-  Future<void> _dialogBuilder(BuildContext context) {
+  Future<void> _deleteConfirmationDialogBuilder(
+    BuildContext context,
+    String holderName,
+    VoidCallback onDelete,
+  ) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            return AlertDialog(
+              title: Text('Are you sure that you want to delete $holderName'),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: Text(
+                    'cancel',
+                    style: TextStyle(color: CustomColors.warning),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: Text(
+                    'delete',
+                    style: TextStyle(color: CustomColors.info),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    onDelete();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _createHolderDialogBuilder(BuildContext context) {
     final controller = TextEditingController();
     return showDialog<void>(
       context: context,
@@ -64,10 +117,13 @@ class SlideItemView extends HookConsumerWidget {
             final notifier = ref.read(enterVaultNameNotifierProvider.notifier);
             return AlertDialog(
               title: const Text('Enter Vault Name'),
-              content: TextField(controller: controller ,
+              content: TextField(
+                controller: controller,
                 decoration: InputDecoration(
                   labelText: 'Enter the Value',
-                  errorText: enterVaultName != null ? 'Value cannot be empty' : null,
+                  errorText: enterVaultName != null
+                      ? 'Value cannot be empty'
+                      : null,
                 ),
               ),
               actions: <Widget>[
@@ -75,7 +131,10 @@ class SlideItemView extends HookConsumerWidget {
                   style: TextButton.styleFrom(
                     textStyle: Theme.of(context).textTheme.labelLarge,
                   ),
-                  child: Text('cancel', style: TextStyle(color: CustomColors.warning),),
+                  child: Text(
+                    'cancel',
+                    style: TextStyle(color: CustomColors.warning),
+                  ),
                   onPressed: () {
                     Navigator.of(context).pop();
                     notifier.setValue(null);
@@ -85,7 +144,10 @@ class SlideItemView extends HookConsumerWidget {
                   style: TextButton.styleFrom(
                     textStyle: Theme.of(context).textTheme.labelLarge,
                   ),
-                  child: Text('create', style: TextStyle(color: CustomColors.info),),
+                  child: Text(
+                    'create',
+                    style: TextStyle(color: CustomColors.info),
+                  ),
                   onPressed: () {
                     if (controller.text.isNotEmpty) {
                       Navigator.of(context).pop();
