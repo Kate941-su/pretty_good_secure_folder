@@ -15,11 +15,21 @@ import 'package:toastification/toastification.dart';
 import 'package:uuid/v4.dart';
 
 class SlideItemView extends HookConsumerWidget {
-  const SlideItemView({super.key});
+  const SlideItemView({required this.isFilterFavorite, super.key});
+
+  final bool isFilterFavorite;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final vaultItemHolderList = ref.watch(vaultItemHolderStateProvider);
+    final vaultItemHolderList = ref.watch(
+      vaultItemHolderStateProvider.select((it) {
+        if (isFilterFavorite) {
+          return it.where((it) => it.isFavorite).toList();
+        } else {
+          return it;
+        }
+      }),
+    );
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
     final listener = ref.listen(toastTriggerProvider, (prev, next) {
       if (next == null) return;
