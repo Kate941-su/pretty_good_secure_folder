@@ -9,6 +9,7 @@ import 'package:pretty_good_secure_folder/provider/regacy/create_vault_holder.da
 import 'package:pretty_good_secure_folder/provider/toast_trigger_provider.dart';
 import 'package:pretty_good_secure_folder/provider/user_state.dart';
 import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
+import 'package:pretty_good_secure_folder/view/component/item_separater.dart';
 import 'package:pretty_good_secure_folder/view/component/slidable_item_widget.dart';
 import 'package:toastification/toastification.dart';
 import 'package:uuid/v4.dart';
@@ -37,40 +38,48 @@ class SlideItemView extends HookConsumerWidget {
     return Scaffold(
       body: ListView(
         children: [
+          Separator(),
           for (var vaultItemHolder in vaultItemHolderList)
-            SlidableItemWidget(
-              vaultItemHolder: vaultItemHolder,
-              isFavorite: vaultItemHolder.isFavorite,
-              onTapFavorite: (nextState) {
-                notifier.editHolder(
-                  holder: vaultItemHolder.copyWith(isFavorite: nextState),
-                );
-              },
-              onTapCopy: (holder) {
-                _createHolderDialogBuilder(
-                  context,
-                  "Copy A Vault from \"${vaultItemHolder.name}\"",
-                  (name) {
-                    final id = UuidV4().generate().hashCode;
-                    notifier.addVaultItemHolder(
-                      itemHolder: holder.copyWith(name: name, id: id),
+            Column(
+              spacing: 0,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SlidableItemWidget(
+                  vaultItemHolder: vaultItemHolder,
+                  isFavorite: vaultItemHolder.isFavorite,
+                  onTapFavorite: (nextState) {
+                    notifier.editHolder(
+                      holder: vaultItemHolder.copyWith(isFavorite: nextState),
                     );
                   },
-                );
-              },
-              onTapItem: (holder) {
-                Logger().i(holder);
-                context.push('/edit/${vaultItemHolder.id}');
-              },
-              onTapDelete: (holder) {
-                _deleteConfirmationDialogBuilder(
-                  context,
-                  vaultItemHolder.name,
-                  () {
-                    notifier.removeVaultItemHolder(id: vaultItemHolder.id);
+                  onTapCopy: (holder) {
+                    _createHolderDialogBuilder(
+                      context,
+                      "Copy A Vault from \"${vaultItemHolder.name}\"",
+                      (name) {
+                        final id = UuidV4().generate().hashCode;
+                        notifier.addVaultItemHolder(
+                          itemHolder: holder.copyWith(name: name, id: id),
+                        );
+                      },
+                    );
                   },
-                );
-              },
+                  onTapItem: (holder) {
+                    Logger().i(holder);
+                    context.push('/edit/${vaultItemHolder.id}');
+                  },
+                  onTapDelete: (holder) {
+                    _deleteConfirmationDialogBuilder(
+                      context,
+                      vaultItemHolder.name,
+                      () {
+                        notifier.removeVaultItemHolder(id: vaultItemHolder.id);
+                      },
+                    );
+                  },
+                ),
+                Separator(),
+              ],
             ),
           TextButton(
             onPressed: () {
@@ -121,7 +130,9 @@ class SlideItemView extends HookConsumerWidget {
         return Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
             return AlertDialog(
-              title: Text('Are you sure that you want to delete $holderName'),
+              title: Text(
+                "Are you sure that you want to delete \"$holderName\"",
+              ),
               actions: <Widget>[
                 TextButton(
                   style: TextButton.styleFrom(
