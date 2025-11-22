@@ -11,10 +11,10 @@ import '../../gen/assets.gen.dart';
 
 class SplashView extends HookConsumerWidget {
   const SplashView({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-    useEffect((){
+    useEffect(() {
       Future(() async {
         await ref.read(sharedPreferenceServiceProvider.notifier).initialize();
         await ref.read(userStateProvider.notifier).initialize();
@@ -22,18 +22,39 @@ class SplashView extends HookConsumerWidget {
         if (context.mounted) { context.go("/main"); }
       });
       return null;
-    },[]);
+    }, []);
 
-      return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Assets.images.logo.image(),
-              Text("Initializing...")
-            ],
+    return Scaffold(
+      body: Column(
+        children: [
+          // Expanded takes remaining space in the Column
+          Expanded(
+            // Center positions the image within that expanded space
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 100,
+                    child: Image.asset('assets/images/logo.png'),
+                  ),
+                  Text(
+                    "Key Holder",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "Initializing...",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      );
-    }
+        ],
+      ),
+    );
+  }
 }
