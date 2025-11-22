@@ -23,6 +23,7 @@ abstract class VaultItemHolder with _$VaultItemHolder {
     h.updateAtString = updatedAt.toIso8601String().split('T')[0];
     h.name = name;
     h.itemIdList = itemList.map((e) => e.id).toList();
+    h.isFavorite = isFavorite;
     return h;
   }
 }

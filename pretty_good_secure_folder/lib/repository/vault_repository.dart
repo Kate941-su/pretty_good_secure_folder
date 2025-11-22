@@ -74,6 +74,7 @@ class VaultRepository extends _$VaultRepository {
                 updatedAt: Util.formatter.parse(it.updateAtString!),
                 name: it.name!,
                 itemList: [],
+                isFavorite: it.isFavorite!,
               );
             } else {
               final itemIdList = it.itemIdList!;
@@ -96,6 +97,7 @@ class VaultRepository extends _$VaultRepository {
                 updatedAt: Util.formatter.parse(it.updateAtString!),
                 name: it.name!,
                 itemList: items.whereType<VaultItem>().toList(),
+                isFavorite: it.isFavorite!,
               );
             }
           })
