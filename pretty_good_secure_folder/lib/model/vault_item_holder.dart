@@ -13,6 +13,7 @@ abstract class VaultItemHolder with _$VaultItemHolder {
     required int id,
     required DateTime updatedAt,
     required String name,
+    @Default(false) bool isFavorite,
     required List<VaultItem> itemList,
   }) = _VaultItemHolder;
 

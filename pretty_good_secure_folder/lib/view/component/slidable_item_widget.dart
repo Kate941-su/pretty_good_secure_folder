@@ -8,12 +8,18 @@ import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
 class SlidableItemWidget extends ConsumerStatefulWidget {
   const SlidableItemWidget({
     required this.vaultItemHolder,
+    required this.isFavorite,
+    required this.onTapFavorite,
+    required this.onTapCopy,
     required this.onTapDelete,
     required this.onTapItem,
     super.key,
   });
 
   final VaultItemHolder vaultItemHolder;
+  final bool isFavorite;
+  final Function(bool) onTapFavorite;
+  final Function(VaultItemHolder) onTapCopy;
   final Function(VaultItemHolder) onTapDelete;
   final Function(VaultItemHolder) onTapItem;
 
@@ -39,7 +45,7 @@ class _SlidableItemState extends ConsumerState<SlidableItemWidget>
           children: [
             SlidableAction(
               onPressed: (_) {
-                widget.onTapDelete(widget.vaultItemHolder);
+                widget.onTapCopy(widget.vaultItemHolder);
               },
               backgroundColor: CustomColors.copy,
               foregroundColor: Colors.white,
@@ -58,13 +64,34 @@ class _SlidableItemState extends ConsumerState<SlidableItemWidget>
           ],
         ),
         child: ListTile(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(widget.vaultItemHolder.name),
-              Text(
-                "${widget.vaultItemHolder.updatedAt.day}.${widget.vaultItemHolder.updatedAt.month}.${widget.vaultItemHolder.updatedAt.year}",
-                style: TextStyle(color: CustomColors.disable, fontSize: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.vaultItemHolder.name, maxLines: 3),
+                    Text(
+                      "${widget.vaultItemHolder.updatedAt.day}.${widget.vaultItemHolder.updatedAt.month}.${widget.vaultItemHolder.updatedAt.year}",
+                      style: TextStyle(
+                        color: CustomColors.disable,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  widget.onTapFavorite(!widget.isFavorite);
+                },
+                icon: widget.isFavorite
+                    ? Icon(Icons.star, color: CustomColors.favorite)
+                    : Icon(
+                        Icons.star_border_outlined,
+                        color: CustomColors.favorite,
+                      ),
               ),
             ],
           ),

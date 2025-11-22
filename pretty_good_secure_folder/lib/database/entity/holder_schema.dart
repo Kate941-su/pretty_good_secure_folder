@@ -8,5 +8,6 @@ class Holder {
   Id? id;
   String? name;
   String? updateAtString;
+  bool? isFavorite;
   List<int>? itemIdList;
 }

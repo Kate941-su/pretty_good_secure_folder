@@ -2,7 +2,7 @@
 - [ ] Password
 - [ ] Holder Sort
 - [ ] Favorite
-- [ ] PGP
+- [x] PGP
 - [ ] Holder Copy
 
 # Priority middle
