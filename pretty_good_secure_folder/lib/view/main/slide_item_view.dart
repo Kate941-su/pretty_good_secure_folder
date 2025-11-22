@@ -5,6 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:pretty_good_secure_folder/extension/colors+_custom_color.dart';
 import 'package:pretty_good_secure_folder/model/toast.dart';
+import 'package:pretty_good_secure_folder/model/union/sort_type.dart';
+import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
 import 'package:pretty_good_secure_folder/provider/regacy/create_vault_holder.dart';
 import 'package:pretty_good_secure_folder/provider/toast_trigger_provider.dart';
 import 'package:pretty_good_secure_folder/provider/user_state.dart';
@@ -15,20 +17,23 @@ import 'package:toastification/toastification.dart';
 import 'package:uuid/v4.dart';
 
 class SlideItemView extends HookConsumerWidget {
-  const SlideItemView({required this.isFilterFavorite, super.key});
+  const SlideItemView({
+    required this.isFilterFavorite,
+    required this.sortType,
+    super.key,
+  });
 
   final bool isFilterFavorite;
+  final SortType sortType;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vaultItemHolderList = ref.watch(
-      vaultItemHolderStateProvider.select((it) {
-        if (isFilterFavorite) {
-          return it.where((it) => it.isFavorite).toList();
-        } else {
-          return it;
-        }
-      }),
+      vaultItemHolderStateProvider.select(
+        (it) => it.where((elem) {
+          return !isFilterFavorite || elem.isFavorite;
+        }).toList(growable: false),
+      ),
     );
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
     final listener = ref.listen(toastTriggerProvider, (prev, next) {
@@ -45,11 +50,13 @@ class SlideItemView extends HookConsumerWidget {
       ref.read(toastTriggerProvider.notifier).setToast(null);
     });
 
+    final sortedVaultItemHolder = sortByType(sortType, vaultItemHolderList);
+
     return Scaffold(
       body: ListView(
         children: [
           Separator(),
-          for (var vaultItemHolder in vaultItemHolderList)
+          for (var vaultItemHolder in sortedVaultItemHolder)
             Column(
               spacing: 0,
               mainAxisSize: MainAxisSize.min,
@@ -127,6 +134,20 @@ class SlideItemView extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  List<VaultItemHolder> sortByType(SortType type, List<VaultItemHolder> list) {
+    List<VaultItemHolder> resultList = list;
+    sortType.when(
+      dateAscend: () =>
+          resultList.sort((a, b) => a.updatedAt.compareTo(b.updatedAt)),
+      dateDescend: () =>
+          resultList.sort((b, a) => a.updatedAt.compareTo(b.updatedAt)),
+      wordAscend: () => resultList.sort((a, b) => a.name.compareTo(b.name)),
+      wordDescend: () =>
+          resultList.sort((b, a) => a.updatedAt.compareTo(b.updatedAt)),
+    );
+    return resultList;
   }
 
   Future<void> _deleteConfirmationDialogBuilder(
