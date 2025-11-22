@@ -37,7 +37,7 @@ class ItemHandleView extends HookConsumerWidget {
     final valueEditingController = TextEditingController();
 
     useEffect(
-          () {
+      () {
         return null;
       },
       [
@@ -52,10 +52,7 @@ class ItemHandleView extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(name),
       ),
       body: SingleChildScrollView(
@@ -85,40 +82,63 @@ class ItemHandleView extends HookConsumerWidget {
                 ],
                 rows: vaultItemList.value
                     .map(
-                      (it) =>
-                      DataRow(
+                      (it) => DataRow(
                         cells: [
-                          DataCell(Text(it.key)),
-                          DataCell(Text(it.value)),
+                          DataCell(
+                            SizedBox(
+                              width: 60,
+                              child: Text(
+                                it.key,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          DataCell(
+                            SizedBox(
+                              width: 60,
+                              child: Text(
+                                it.value,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
                           DataCell(
                             Row(
                               spacing: 0,
                               children: [
                                 IconButton(
                                   onPressed: () {
+                                    keyEditingController.text = it.key;
+                                    valueEditingController.text = it.value;
                                     _editDialogBuilder(
-                                        context,
-                                        keyEditingController,
-                                        valueEditingController,
-                                        it.key,
-                                        it.value,
-                                        vaultItemList.value
-                                            .where((e) => e.id != it.id)
-                                            .map((e) => e.key,)
-                                            .toList(),
-                                            (key, value) {
-                                          final item = VaultItem(id: it.id,
-                                              key: key,
-                                              value: value);
-                                          var newVaultItemList = vaultItemList
-                                              .value.map((it) {
-                                            if (it.id == item.id) {
-                                              return item;
-                                            }
-                                            return it;
-                                          }).toList(growable: false);
-                                          vaultItemList.value = newVaultItemList;
-                                        }
+                                      context,
+                                      keyEditingController,
+                                      valueEditingController,
+                                      it.key,
+                                      it.value,
+                                      vaultItemList.value
+                                          .where((e) => e.id != it.id)
+                                          .map((e) => e.key)
+                                          .toList(),
+                                      (key, value) {
+                                        final item = VaultItem(
+                                          id: it.id,
+                                          key: key,
+                                          value: value,
+                                        );
+                                        var newVaultItemList = vaultItemList
+                                            .value
+                                            .map((it) {
+                                              if (it.id == item.id) {
+                                                return item;
+                                              }
+                                              return it;
+                                            })
+                                            .toList(growable: false);
+                                        vaultItemList.value = newVaultItemList;
+                                      },
                                     );
                                   },
                                   icon: const Icon(
@@ -153,7 +173,7 @@ class ItemHandleView extends HookConsumerWidget {
                           ),
                         ],
                       ),
-                )
+                    )
                     .toList(growable: false),
               ),
               TextEnterField(
@@ -178,7 +198,7 @@ class ItemHandleView extends HookConsumerWidget {
                   } else if (keyController.text.contains(" ")) {
                     keyStringError.value = AppError.keyStringError();
                   } else if (vaultItemList.value.any(
-                        (it) => it.key == keyController.text,
+                    (it) => it.key == keyController.text,
                   )) {
                     keyStringError.value = AppError.keyDupulicateError();
                   } else {
@@ -195,9 +215,7 @@ class ItemHandleView extends HookConsumerWidget {
                       valueStringError.value != null) {
                     return;
                   }
-                  final id = UuidV4()
-                      .generate()
-                      .hashCode;
+                  final id = UuidV4().generate().hashCode;
                   vaultItemList.value = [
                     ...vaultItemList.value,
                     VaultItem(
@@ -245,31 +263,39 @@ class ItemHandleView extends HookConsumerWidget {
     );
   }
 
-  Future<void> _editDialogBuilder(BuildContext context,
-      TextEditingController keyEditController,
-      TextEditingController valueEditController,
-      String key,
-      String value,
-      List<String> forbiddenKeyList,
-      Function(String, String) onEdit,) {
-
-    final keyErrorNotifierProvider = NotifierProvider.family<TextNotifier, String?, String?>(
-        (text) => TextNotifier(text),
-    );
-
-    final valueErrorNotifierProvider = NotifierProvider.family<TextNotifier, String?, String?>(
+  Future<void> _editDialogBuilder(
+    BuildContext context,
+    TextEditingController keyEditController,
+    TextEditingController valueEditController,
+    String key,
+    String value,
+    List<String> forbiddenKeyList,
+    Function(String, String) onEdit,
+  ) {
+    final keyErrorNotifierProvider =
+        NotifierProvider.family<TextNotifier, String?, String?>(
           (text) => TextNotifier(text),
-    );
+        );
+
+    final valueErrorNotifierProvider =
+        NotifierProvider.family<TextNotifier, String?, String?>(
+          (text) => TextNotifier(text),
+        );
 
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final keyProvider = keyErrorNotifierProvider(null);
+            final valueProvider = valueErrorNotifierProvider(null);
 
-            // TODO: implement key error value with Riverpod
-            final keyErrorValue = ref.watch(keyErrorNotifierProvider(null));
-            final valueErrorValue = ref.watch(valueErrorNotifierProvider(null));
+            final keyNotifier = ref.read(keyProvider.notifier);
+            final keyError = ref.watch(keyProvider);
+
+            final valueNotifier = ref.read(valueProvider.notifier);
+            final valueError = ref.watch(valueProvider);
+
             return AlertDialog(
               title: const Text('Edit Item'),
               content: Column(
@@ -277,19 +303,17 @@ class ItemHandleView extends HookConsumerWidget {
                 children: [
                   TextField(
                     controller: keyEditController,
-                    onChanged: (value) {
-
-                    },
+                    onChanged: (value) {},
                     decoration: InputDecoration(
                       labelText: 'Enter the key',
-                      errorText: ke.value,
+                      errorText: keyError,
                     ),
                   ),
                   TextField(
                     controller: valueEditController,
                     decoration: InputDecoration(
                       labelText: 'Enter the Value',
-                      errorText: errorValueString.value,
+                      errorText: valueError,
                     ),
                   ),
                 ],
@@ -297,10 +321,7 @@ class ItemHandleView extends HookConsumerWidget {
               actions: <Widget>[
                 TextButton(
                   style: TextButton.styleFrom(
-                    textStyle: Theme
-                        .of(context)
-                        .textTheme
-                        .labelLarge,
+                    textStyle: Theme.of(context).textTheme.labelLarge,
                   ),
                   child: Text(
                     'cancel',
@@ -312,32 +333,36 @@ class ItemHandleView extends HookConsumerWidget {
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
-                    textStyle: Theme
-                        .of(context)
-                        .textTheme
-                        .labelLarge,
+                    textStyle: Theme.of(context).textTheme.labelLarge,
                   ),
                   child: Text(
-                    'create',
+                    'edit',
                     style: TextStyle(color: CustomColors.info),
                   ),
                   onPressed: () {
+                    String? tempKeyError;
+                    String? tempValueError;
                     if (keyEditController.text.isEmpty) {
-                      errorKeyString.value = 'Key must be unique and not empty';
+                      tempKeyError = "Key must not be empty";
                     } else if (keyEditController.text.contains(" ")) {
-                      errorKeyString.value = 'Key must be unique and not empty';
-                    } else
-                    if (forbiddenKeyList.contains(keyEditController.text)) {
-                      errorKeyString.value = 'Key must be unique and not empty';
+                      tempKeyError = "Containing blank is not allowed";
+                    } else if (forbiddenKeyList.contains(
+                      keyEditController.text,
+                    )) {
+                      tempKeyError = "This key is duplicated";
                     }
+
                     if (valueEditController.text.isEmpty) {
-                      errorValueString.value = 'Value must not be empty';
+                      tempValueError = "Value must not be empty";
                     }
-                    if (errorKeyString.value != null ||
-                        errorValueString.value != null) {
+
+                    if (tempKeyError == null && tempValueError == null) {
                       onEdit(keyEditController.text, valueEditController.text);
                       Navigator.of(context).pop();
                       return;
+                    } else {
+                      keyNotifier.setValue(tempKeyError);
+                      valueNotifier.setValue(tempValueError);
                     }
                   },
                 ),
