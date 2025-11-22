@@ -7,6 +7,8 @@ import 'package:pretty_good_secure_folder/provider/user_state.dart';
 import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
 import 'package:pretty_good_secure_folder/service/shared_preference_service.dart';
 
+import '../../gen/assets.gen.dart';
+
 class SplashView extends HookConsumerWidget {
   const SplashView({super.key});
   @override
@@ -23,12 +25,14 @@ class SplashView extends HookConsumerWidget {
     },[]);
 
       return Scaffold(
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Splash")
-          ],
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Assets.images.logo.image(),
+              Text("Initializing...")
+            ],
+          ),
         ),
       );
     }
