@@ -18,7 +18,7 @@ class MainView extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Folder'),
+        title: const Text('Items'),
         actions: [
           IconButton(
             onPressed: () {

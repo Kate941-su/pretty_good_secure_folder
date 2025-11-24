@@ -6,4 +6,5 @@ class CustomColors {
   static Color disable = Color(0xA0616161);
   static Color copy = Colors.green;
   static Color favorite = Color(0xFFFF5000);
+  static Color primaryColor = Color(0xFF0CC0DF);
 }

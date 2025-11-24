@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:pretty_good_secure_folder/extension/colors+_custom_color.dart';
 import 'package:pretty_good_secure_folder/provider/user_state.dart';
 import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
 import 'package:pretty_good_secure_folder/service/shared_preference_service.dart';
@@ -25,6 +26,7 @@ class SplashView extends HookConsumerWidget {
     }, []);
 
     return Scaffold(
+      backgroundColor: CustomColors.primaryColor,
       body: Column(
         children: [
           // Expanded takes remaining space in the Column
@@ -35,17 +37,18 @@ class SplashView extends HookConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: 100,
+                    width: 200,
                     child: Image.asset('assets/images/logo.png'),
                   ),
                   Text(
                     "Key Holder",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 24,
+                        fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   Text(
                     "Initializing...",
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
