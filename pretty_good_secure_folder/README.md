@@ -33,8 +33,5 @@ The main screen displays a list of all your created Vaults. From here, you can c
 1.  On the main screen, swipe left on the Vault you wish to delete.
 2.  A "Delete" button will appear. Tapping it will permanently remove the Vault and all of its contents.
 
-## License
-
-This project is licensed under the MIT License.
 
 
