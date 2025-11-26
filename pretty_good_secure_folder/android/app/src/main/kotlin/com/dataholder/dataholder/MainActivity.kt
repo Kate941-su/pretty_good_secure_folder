@@ -1,4 +1,4 @@
-package com.example.pretty_good_secure_folder
+package com.dataholder.dataholder
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -10,7 +10,7 @@ plugins {
 }
 
 val keystoreProperties = Properties()
-val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystorePropertiesFile = rootProject.file("app/keystore.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
@@ -45,14 +45,13 @@ android {
             keyAlias = keystoreProperties.getProperty("keyAlias")
             keyPassword = keystoreProperties.getProperty("keyPassword")
             storePassword = keystoreProperties.getProperty("storePassword")
-            // Handle the file path safely
             val storeFilePath = keystoreProperties.getProperty("storeFile")
             storeFile = if (storeFilePath != null) file(storeFilePath) else null
         }
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             // Apply the signing config
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
@@ -61,14 +60,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-    }
-
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
