@@ -3,8 +3,8 @@
 - [x] Favorite
 - [x] PGP
 - [x] Holder Copy
+- [x] Template
 
 # Priority middle
-- [ ] Template
 - [ ] Backup
 - [ ] Password
