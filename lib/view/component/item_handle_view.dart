@@ -5,7 +5,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pretty_good_secure_folder/extension/colors+_custom_color.dart';
+import 'package:pretty_good_secure_folder/model/union/template.dart';
 import 'package:pretty_good_secure_folder/provider/regacy/create_vault_holder.dart';
+import 'package:pretty_good_secure_folder/provider/template_state.dart';
 import 'package:pretty_good_secure_folder/view/component/text_enter_field.dart';
 import 'package:uuid/v4.dart';
 
@@ -57,7 +59,12 @@ class ItemHandleView extends HookConsumerWidget {
         title: Text(name, style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              _templateDialogBuilder(context, (template) {
+                final a = template.item;
+                vaultItemList.value = [...vaultItemList.value, ...template.item ];
+              });
+            },
             icon: Icon(Icons.sticky_note_2_outlined),
           ),
         ],
@@ -380,4 +387,62 @@ class ItemHandleView extends HookConsumerWidget {
       },
     );
   }
+
+  Future<void> _templateDialogBuilder(BuildContext context, Function(Template) onSelect) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final currentTemplate = ref.watch(templateStateProvider);
+            return AlertDialog(
+              title: Text("Choose sort type"),
+              content: RadioGroup<Template>(
+                groupValue: currentTemplate,
+                onChanged: (value) {
+                  if (value == null) {
+                    return;
+                  }
+                  ref.read(templateStateProvider.notifier).setSortType(value);
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ListTile(
+                      title: Text(Template.login().name),
+                      leading: Radio<Template>(value: Template.login()),
+                    ),
+                    ListTile(
+                      title: Text(Template.passport().name),
+                      leading: Radio<Template>(value: Template.passport()),
+                    ),
+                    ListTile(
+                      title: Text(Template.creditCard().name),
+                      leading: Radio<Template>(value: Template.creditCard()),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: Text(
+                    'Apply',
+                    style: TextStyle(color: CustomColors.info),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    onSelect(currentTemplate);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
 }
