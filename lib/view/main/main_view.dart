@@ -14,26 +14,81 @@ class MainView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isFavorite = useState(false);
+    final isSearching = useState(false);
     final sortType = ref.watch(sortTypeStateProvider);
+    final controller = TextEditingController();
+
+    Widget a({
+      required bool isSearching,
+      required Function(String) onSave,
+      required VoidCallback onCancel,
+    }) {
+      if (isSearching) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: controller,
+                  cursorColor: Colors.red,
+                  onTapOutside: (_){
+                    onCancel();
+                  },
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  onCancel();
+                },
+                icon: Icon(Icons.cancel),
+              ),
+            ],
+          ),
+        );
+      } else {
+        return Text("Items");
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Items'),
+        title: a(
+          isSearching: isSearching.value,
+          onSave: (value) {
+            isSearching.value = false;
+          },
+          onCancel: () {
+            isSearching.value = false;
+          },
+        ),
         actions: [
-          IconButton(
-            onPressed: () {
-              isFavorite.value = !isFavorite.value;
-            },
-            icon: isFavorite.value
-                ? Icon(Icons.star, color: CustomColors.favorite)
-                : Icon(
-                    Icons.star_border_outlined,
-                    color: CustomColors.favorite,
-                  ),
-          ),
-          IconButton(onPressed: () {
-            _changeSortTypeDialogBuilder(context);
-          }, icon: Icon(Icons.sort)),
+          if (!isSearching.value)
+            IconButton(
+              onPressed: () {
+                isSearching.value = true;
+              },
+              icon: Icon(Icons.search),
+            ),
+          if (!isSearching.value)
+            IconButton(
+              onPressed: () {
+                isFavorite.value = !isFavorite.value;
+              },
+              icon: isFavorite.value
+                  ? Icon(Icons.star, color: CustomColors.favorite)
+                  : Icon(
+                      Icons.star_border_outlined,
+                      color: CustomColors.favorite,
+                    ),
+            ),
+          if (!isSearching.value)
+            IconButton(
+              onPressed: () {
+                _changeSortTypeDialogBuilder(context);
+              },
+              icon: Icon(Icons.sort),
+            ),
         ],
       ),
       body: SlideItemView(

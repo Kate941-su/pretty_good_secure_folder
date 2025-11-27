@@ -9,7 +9,6 @@ import 'package:pretty_good_secure_folder/model/union/sort_type.dart';
 import 'package:pretty_good_secure_folder/model/vault_item_holder.dart';
 import 'package:pretty_good_secure_folder/provider/regacy/create_vault_holder.dart';
 import 'package:pretty_good_secure_folder/provider/toast_trigger_provider.dart';
-import 'package:pretty_good_secure_folder/provider/user_state.dart';
 import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
 import 'package:pretty_good_secure_folder/view/component/item_separater.dart';
 import 'package:pretty_good_secure_folder/view/component/slidable_item_widget.dart';
@@ -19,15 +18,19 @@ import 'package:uuid/v4.dart';
 class SlideItemView extends HookConsumerWidget {
   const SlideItemView({
     required this.isFilterFavorite,
+    required this.filterText,
     required this.sortType,
     super.key,
   });
 
   final bool isFilterFavorite;
   final SortType sortType;
+  final String filterText;
+
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final filterTextController = TextEditingController();
     final vaultItemHolderList = ref.watch(
       vaultItemHolderStateProvider.select(
         (it) => it.where((elem) {
@@ -50,87 +53,70 @@ class SlideItemView extends HookConsumerWidget {
       ref.read(toastTriggerProvider.notifier).setToast(null);
     });
 
+    final filteredVaultItemHolder =  vaultItemHolderList
+
     final sortedVaultItemHolder = sortByType(sortType, vaultItemHolderList);
 
     return Scaffold(
-      body: ListView(
+      body: Column(
         children: [
           Separator(),
-          for (var vaultItemHolder in sortedVaultItemHolder)
-            Column(
-              spacing: 0,
-              mainAxisSize: MainAxisSize.min,
+          Expanded(
+            child: ListView(
               children: [
-                SlidableItemWidget(
-                  vaultItemHolder: vaultItemHolder,
-                  isFavorite: vaultItemHolder.isFavorite,
-                  onTapFavorite: (nextState) {
-                    notifier.editHolder(
-                      holder: vaultItemHolder.copyWith(isFavorite: nextState),
-                    );
-                  },
-                  onTapCopy: (holder) {
-                    _createHolderDialogBuilder(
-                      context,
-                      "Copy A Vault from \"${vaultItemHolder.name}\"",
-                      (name) {
-                        final id = UuidV4().generate().hashCode;
-                        notifier.addVaultItemHolder(
-                          itemHolder: holder.copyWith(name: name, id: id),
-                        );
-                      },
-                    );
-                  },
-                  onTapItem: (holder) {
-                    Logger().i(holder);
-                    context.push('/edit/${vaultItemHolder.id}');
-                  },
-                  onTapDelete: (holder) {
-                    _deleteConfirmationDialogBuilder(
-                      context,
-                      vaultItemHolder.name,
-                      () {
-                        notifier.removeVaultItemHolder(id: vaultItemHolder.id);
-                      },
-                    );
-                  },
-                ),
-                Separator(),
-              ],
-            ),
-          TextButton(
-            onPressed: () {
-              _createHolderDialogBuilder(context, "Create New Vault", (name) {
-                context.push('/create/$name');
-              });
-            },
-            child: Text("Create New Vault"),
-          ),
-          if (kDebugMode)
-            Column(
-              children: [
-                TextButton(
-                  onPressed: () {
-                    ref.watch(userStateProvider);
-                    Logger().i(
-                      ref.watch(
-                        userStateProvider.select((it) => it.privateKey),
+                for (var vaultItemHolder in sortedVaultItemHolder)
+                  Column(
+                    spacing: 0,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SlidableItemWidget(
+                        vaultItemHolder: vaultItemHolder,
+                        isFavorite: vaultItemHolder.isFavorite,
+                        onTapFavorite: (nextState) {
+                          notifier.editHolder(
+                            holder: vaultItemHolder.copyWith(isFavorite: nextState),
+                          );
+                        },
+                        onTapCopy: (holder) {
+                          _createHolderDialogBuilder(
+                            context,
+                            "Copy A Vault from \"${vaultItemHolder.name}\"",
+                            (name) {
+                              final id = UuidV4().generate().hashCode;
+                              notifier.addVaultItemHolder(
+                                itemHolder: holder.copyWith(name: name, id: id),
+                              );
+                            },
+                          );
+                        },
+                        onTapItem: (holder) {
+                          Logger().i(holder);
+                          context.push('/edit/${vaultItemHolder.id}');
+                        },
+                        onTapDelete: (holder) {
+                          _deleteConfirmationDialogBuilder(
+                            context,
+                            vaultItemHolder.name,
+                            () {
+                              notifier.removeVaultItemHolder(id: vaultItemHolder.id);
+                            },
+                          );
+                        },
                       ),
-                    );
-                  },
-                  child: Text("Show private key"),
-                ),
+                      Separator(),
+                    ],
+                  ),
                 TextButton(
                   onPressed: () {
-                    ref.watch(userStateProvider);
-                    Logger().i(
-                      ref.watch(userStateProvider.select((it) => it.publicKey)),
-                    );
+                    _createHolderDialogBuilder(context, "Create New Vault", (name) {
+                      context.push('/create/$name');
+                    });
                   },
-                  child: Text("Show public key"),
+                  child: Text("Create New Vault"),
                 ),
               ],
             ),
+          ),
         ],
       ),
     );
