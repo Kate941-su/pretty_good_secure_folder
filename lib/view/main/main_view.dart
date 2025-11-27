@@ -46,18 +46,19 @@ class MainView extends HookConsumerWidget {
                 onPressed: () {
                   onCancel();
                 },
-                icon: Icon(Icons.cancel),
+                icon: Icon(Icons.cancel, color: Colors.white,),
               ),
             ],
           ),
         );
       } else {
-        return Text("Items");
+        return Text("Items", style: TextStyle(color: Colors.white),);
       }
     }
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: CustomColors.primaryColor,
         title: appBarTitle(
           isSearching: isSearching.value,
           onChange: (value) {
@@ -74,7 +75,7 @@ class MainView extends HookConsumerWidget {
               onPressed: () {
                 isSearching.value = true;
               },
-              icon: Icon(Icons.search),
+              icon: Icon(Icons.search, color: Colors.white),
             ),
           if (!isSearching.value)
             IconButton(
@@ -93,7 +94,7 @@ class MainView extends HookConsumerWidget {
               onPressed: () {
                 _changeSortTypeDialogBuilder(context);
               },
-              icon: Icon(Icons.sort),
+              icon: Icon(Icons.sort, color: Colors.white),
             ),
         ],
       ),

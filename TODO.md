@@ -1,5 +1,4 @@
 # Priority high
-- [ ] Password
 - [x] Holder Sort
 - [x] Favorite
 - [x] PGP
@@ -7,3 +6,5 @@
 
 # Priority middle
 - [ ] Template
+- [ ] Backup
+- [ ] Password

@@ -52,8 +52,15 @@ class ItemHandleView extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(name),
+        backgroundColor: CustomColors.primaryColor,
+        foregroundColor: Colors.white,
+        title: Text(name, style: TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.sticky_note_2_outlined),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Center(
