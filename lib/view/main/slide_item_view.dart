@@ -27,15 +27,15 @@ class SlideItemView extends HookConsumerWidget {
   final SortType sortType;
   final String filterText;
 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filterTextController = TextEditingController();
     final vaultItemHolderList = ref.watch(
       vaultItemHolderStateProvider.select(
-        (it) => it.where((elem) {
-          return !isFilterFavorite || elem.isFavorite;
-        }).toList(growable: false),
+        (it) => it
+            .where((elem) {
+              return !isFilterFavorite || elem.isFavorite;
+            })
+            .toList(growable: false),
       ),
     );
     final notifier = ref.read(vaultItemHolderStateProvider.notifier);
@@ -53,9 +53,15 @@ class SlideItemView extends HookConsumerWidget {
       ref.read(toastTriggerProvider.notifier).setToast(null);
     });
 
-    final filteredVaultItemHolder =  vaultItemHolderList
+    final filteredVaultItemHolder = vaultItemHolderList
+        .where(
+          (elem) {
+            return elem.name.toLowerCase().contains(filterText.toLowerCase()) || filterText.isEmpty;
+          },
+        )
+        .toList(growable: false);
 
-    final sortedVaultItemHolder = sortByType(sortType, vaultItemHolderList);
+    final sortedVaultItemHolder = sortByType(sortType, filteredVaultItemHolder);
 
     return Scaffold(
       body: Column(
@@ -74,7 +80,9 @@ class SlideItemView extends HookConsumerWidget {
                         isFavorite: vaultItemHolder.isFavorite,
                         onTapFavorite: (nextState) {
                           notifier.editHolder(
-                            holder: vaultItemHolder.copyWith(isFavorite: nextState),
+                            holder: vaultItemHolder.copyWith(
+                              isFavorite: nextState,
+                            ),
                           );
                         },
                         onTapCopy: (holder) {
@@ -98,7 +106,9 @@ class SlideItemView extends HookConsumerWidget {
                             context,
                             vaultItemHolder.name,
                             () {
-                              notifier.removeVaultItemHolder(id: vaultItemHolder.id);
+                              notifier.removeVaultItemHolder(
+                                id: vaultItemHolder.id,
+                              );
                             },
                           );
                         },
@@ -108,7 +118,9 @@ class SlideItemView extends HookConsumerWidget {
                   ),
                 TextButton(
                   onPressed: () {
-                    _createHolderDialogBuilder(context, "Create New Vault", (name) {
+                    _createHolderDialogBuilder(context, "Create New Vault", (
+                      name,
+                    ) {
                       context.push('/create/$name');
                     });
                   },

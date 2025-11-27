@@ -15,12 +15,13 @@ class MainView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isFavorite = useState(false);
     final isSearching = useState(false);
+    final filterText = useState("");
     final sortType = ref.watch(sortTypeStateProvider);
-    final controller = TextEditingController();
+    // final controller = TextEditingController();
 
-    Widget a({
+    Widget appBarTitle({
       required bool isSearching,
-      required Function(String) onSave,
+      required Function(String) onChange,
       required VoidCallback onCancel,
     }) {
       if (isSearching) {
@@ -30,10 +31,14 @@ class MainView extends HookConsumerWidget {
             children: [
               Expanded(
                 child: TextFormField(
-                  controller: controller,
+                  // controller: controller,
+                  initialValue: "",
                   cursorColor: Colors.red,
                   onTapOutside: (_){
                     onCancel();
+                  },
+                  onChanged: (value) {
+                    onChange(value);
                   },
                 ),
               ),
@@ -53,12 +58,13 @@ class MainView extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: a(
+        title: appBarTitle(
           isSearching: isSearching.value,
-          onSave: (value) {
-            isSearching.value = false;
+          onChange: (value) {
+            filterText.value = value;
           },
           onCancel: () {
+            filterText.value = "";
             isSearching.value = false;
           },
         ),
@@ -93,6 +99,7 @@ class MainView extends HookConsumerWidget {
       ),
       body: SlideItemView(
         isFilterFavorite: isFavorite.value,
+        filterText: filterText.value,
         sortType: sortType,
       ),
     );
