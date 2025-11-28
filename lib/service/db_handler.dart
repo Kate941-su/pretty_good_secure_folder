@@ -1,9 +1,15 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:isar_community/isar.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/entity/holder_schema.dart';
 import '../database/entity/item_schema.dart';
 import 'isar_service.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p; // <-- Import with the 'p' alias
+
 
 part 'db_handler.g.dart';
 
@@ -80,6 +86,23 @@ class DbHandler extends _$DbHandler {
     await isar.writeTxn(() async {
       await isar.items.deleteAll(items.map((e) => e.id!).toList());
     });
+  }
+
+  Future<void> exportFile() async {
+    final isar = ref.watch(isarProvider);
+    final directory = await getApplicationDocumentsDirectory();
+    final backup = "backup.db";
+    final directoryPath = directory.path;
+    final completePath = p.join(directoryPath, backup);
+    try {
+      final file = File(completePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+        debugPrint(e.toString());
+    }
+    isar.copyToFile(completePath);
   }
 
 }

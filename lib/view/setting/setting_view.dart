@@ -1,39 +1,61 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pretty_good_secure_folder/model/error/app_error.dart';
 import 'package:pretty_good_secure_folder/provider/global_package_info.dart';
+import 'package:pretty_good_secure_folder/service/db_handler.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class SettingView extends HookConsumerWidget {
   const SettingView({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SettingsList(
       sections: [
         SettingsSection(
-          title: Text('Common'),
+          title: Text('General'),
           tiles: <SettingsTile>[
             SettingsTile.navigation(
-              leading: Icon(Icons.language),
-              title: Text('Language'),
-              value: Text('English'),
-            ),
-            SettingsTile.switchTile(
-              onToggle: (value) {},
-              initialValue: true,
-              leading: Icon(Icons.format_paint),
-              title: Text('Enable custom theme'),
-            ),
-            SettingsTile.navigation(
-              onPressed: (_){
+              onPressed: (_) {
                 showLicensePage(
-                  applicationName: ref.watch(globalPackageInfoProvider.select((it) => it.packageName)),
-                    context: context
-                );},
+                  applicationName: ref.watch(
+                    globalPackageInfoProvider.select((it) => it.packageName),
+                  ),
+                  context: context,
+                );
+              },
               leading: Icon(Icons.library_books),
               title: Text('License'),
+            ),
+          ],
+        ),
+        SettingsSection(
+          title: Text('Backup'),
+          tiles: <SettingsTile>[
+            SettingsTile.navigation(
+              onPressed: (_) async {
+                await ref.read(dbHandlerProvider.notifier).exportFile();
+              },
+              leading: Icon(Icons.upload),
+              title: Text('Data Export'),
+            ),
+            SettingsTile.navigation(
+              onPressed: (_) {
+
+              },
+              leading: Icon(Icons.import_export),
+              title: Text('Data Import'),
+            ),
+            SettingsTile.navigation(
+              onPressed: (_) {
+                // Directory(path);
+              },
+              leading: Icon(Icons.garage),
+              title: Text('Debug(Delete)'),
             ),
           ],
         ),
