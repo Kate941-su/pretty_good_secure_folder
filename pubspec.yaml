@@ -50,6 +50,9 @@ dependencies:
   # searchbar
   animated_search_bar: ^2.8.0
 
+  # settings
+  settings_ui: ^2.0.2
+  package_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:

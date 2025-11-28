@@ -6,5 +6,6 @@
 - [x] Template
 
 # Priority middle
+- [ ] Manual (myblog)
 - [ ] Backup
 - [ ] Password

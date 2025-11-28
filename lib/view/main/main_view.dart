@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pretty_good_secure_folder/model/union/sort_type.dart';
 import 'package:pretty_good_secure_folder/provider/sort_type_state.dart';
 import 'package:pretty_good_secure_folder/view/main/slide_item_view.dart';
+import 'package:pretty_good_secure_folder/view/setting/setting_view.dart';
 
 import '../../extension/colors+_custom_color.dart';
 
@@ -16,8 +17,8 @@ class MainView extends HookConsumerWidget {
     final isFavorite = useState(false);
     final isSearching = useState(false);
     final filterText = useState("");
+    final currentIndex = useState(0);
     final sortType = ref.watch(sortTypeStateProvider);
-    // final controller = TextEditingController();
 
     Widget appBarTitle({
       required bool isSearching,
@@ -34,7 +35,7 @@ class MainView extends HookConsumerWidget {
                   // controller: controller,
                   initialValue: "",
                   cursorColor: Colors.red,
-                  onTapOutside: (_){
+                  onTapOutside: (_) {
                     onCancel();
                   },
                   onChanged: (value) {
@@ -46,63 +47,107 @@ class MainView extends HookConsumerWidget {
                 onPressed: () {
                   onCancel();
                 },
-                icon: Icon(Icons.cancel, color: Colors.white,),
+                icon: Icon(Icons.cancel, color: Colors.white),
               ),
             ],
           ),
         );
       } else {
-        return Text("Items", style: TextStyle(color: Colors.white),);
+        return Text("Items", style: TextStyle(color: Colors.white));
+      }
+    }
+
+    Widget currentScreen(int tabIndex) {
+      switch (tabIndex) {
+        case 0:
+          return SlideItemView(
+            isFilterFavorite: isFavorite.value,
+            filterText: filterText.value,
+            sortType: sortType,
+          );
+        case 1:
+          return SettingView();
+        default:
+          return Placeholder();
+      }
+    }
+
+    PreferredSizeWidget itemAppBar(int tabIndex) {
+      switch (tabIndex) {
+        case 0:
+          return AppBar(
+            backgroundColor: CustomColors.primaryColor,
+            title: appBarTitle(
+              isSearching: isSearching.value,
+              onChange: (value) {
+                filterText.value = value;
+              },
+              onCancel: () {
+                filterText.value = "";
+                isSearching.value = false;
+              },
+            ),
+            actions: [
+              if (!isSearching.value)
+                IconButton(
+                  onPressed: () {
+                    isSearching.value = true;
+                  },
+                  icon: Icon(Icons.search, color: Colors.white),
+                ),
+              if (!isSearching.value)
+                IconButton(
+                  onPressed: () {
+                    isFavorite.value = !isFavorite.value;
+                  },
+                  icon: isFavorite.value
+                      ? Icon(Icons.star, color: CustomColors.favorite)
+                      : Icon(
+                          Icons.star_border_outlined,
+                          color: CustomColors.favorite,
+                        ),
+                ),
+              if (!isSearching.value)
+                IconButton(
+                  onPressed: () {
+                    _changeSortTypeDialogBuilder(context);
+                  },
+                  icon: Icon(Icons.sort, color: Colors.white),
+                ),
+            ],
+          );
+        case 1:
+          return AppBar(
+            backgroundColor: CustomColors.primaryColor,
+            title: Text("Settings", style: TextStyle(color: Colors.white),),
+          );
+        default:
+          return AppBar();
       }
     }
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: CustomColors.primaryColor,
-        title: appBarTitle(
-          isSearching: isSearching.value,
-          onChange: (value) {
-            filterText.value = value;
-          },
-          onCancel: () {
-            filterText.value = "";
-            isSearching.value = false;
-          },
-        ),
-        actions: [
-          if (!isSearching.value)
-            IconButton(
-              onPressed: () {
-                isSearching.value = true;
-              },
-              icon: Icon(Icons.search, color: Colors.white),
-            ),
-          if (!isSearching.value)
-            IconButton(
-              onPressed: () {
-                isFavorite.value = !isFavorite.value;
-              },
-              icon: isFavorite.value
-                  ? Icon(Icons.star, color: CustomColors.favorite)
-                  : Icon(
-                      Icons.star_border_outlined,
-                      color: CustomColors.favorite,
-                    ),
-            ),
-          if (!isSearching.value)
-            IconButton(
-              onPressed: () {
-                _changeSortTypeDialogBuilder(context);
-              },
-              icon: Icon(Icons.sort, color: Colors.white),
-            ),
+      appBar: itemAppBar(currentIndex.value),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          currentIndex.value = index;
+        },
+        indicatorColor: Colors.amber,
+        selectedIndex: currentIndex.value,
+        destinations: const <Widget>[
+          NavigationDestination(
+            selectedIcon: Icon(Icons.folder),
+            icon: Icon(Icons.folder_outlined),
+            label: 'Items',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined),
+            label: 'Setting',
+          ),
         ],
       ),
-      body: SlideItemView(
-        isFilterFavorite: isFavorite.value,
-        filterText: filterText.value,
-        sortType: sortType,
-      ),
+      body: currentScreen(currentIndex.value),
     );
   }
 
