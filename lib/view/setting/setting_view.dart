@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:pretty_good_secure_folder/model/error/app_error.dart';
 import 'package:pretty_good_secure_folder/provider/global_package_info.dart';
 import 'package:pretty_good_secure_folder/service/db_handler.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:file_picker/file_picker.dart';
+
 
 class SettingView extends HookConsumerWidget {
   const SettingView({super.key});
@@ -38,14 +38,22 @@ class SettingView extends HookConsumerWidget {
           tiles: <SettingsTile>[
             SettingsTile.navigation(
               onPressed: (_) async {
-                await ref.read(dbHandlerProvider.notifier).exportFile();
+                final exportedPath = await ref.read(dbHandlerProvider.notifier).exportFile();
+                SharePlus.instance.share(ShareParams(files: [XFile(exportedPath)]));
               },
               leading: Icon(Icons.upload),
               title: Text('Data Export'),
             ),
             SettingsTile.navigation(
-              onPressed: (_) {
+              onPressed: (_) async {
+                FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: false);
 
+                if (result != null) {
+                  File file = result.paths.map((path) => File(path!)).toList().first;
+                  ref.read(dbHandlerProvider.notifier).importFile(file.path);
+                } else {
+                  // User canceled the picker
+                }
               },
               leading: Icon(Icons.import_export),
               title: Text('Data Import'),
