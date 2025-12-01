@@ -9,7 +9,7 @@ import '../database/entity/holder_schema.dart';
 import '../database/entity/item_schema.dart';
 import 'isar_service.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p; // <-- Import with the 'p' alias
+import 'package:path/path.dart' as p;
 
 part 'db_handler.g.dart';
 
@@ -104,7 +104,8 @@ class DbHandler extends _$DbHandler {
     return completePath;
   }
 
-  Future<void> importFile(String filePath) async {
+  Future<void> importFile(String filePath)  async  {
+    // 1. Get All Items from
     final file = File(filePath);
     if (!file.existsSync()) {
       return;
@@ -114,14 +115,31 @@ class DbHandler extends _$DbHandler {
     final completePath = p.join(dirPath, _fileName);
     final copiedFile = await file.copy(completePath);
     final dbName = p.basenameWithoutExtension(completePath);
-    print(copiedFile.path);
     final tempIsar = await Isar.open(
       [ItemSchema, HolderSchema],
       directory: dirPath,
       name: dbName,
     );
-    final exampleItem = await tempIsar.items.where().findAll();
-    final exampleFolder = await tempIsar.holders.where().findAll();
+    final backupItems = await tempIsar.items.where().findAll();
+    final backupHolders = await tempIsar.holders.where().findAll();
+
+    // 2. compare to the existing folders
+    final currentItems = await readAllItem();
+    final currentHolders = await readAllHolder();
+
+    // 3. backup items and holders if it is not duplicated
+    for (var backupHolder in backupHolders) {
+      if (!currentHolders.map((it) => it.id).contains(backupHolder.id)) {
+        writeHolder(backupHolder);
+      }
+    }
+
+    for (var backupItem in backupItems) {
+      if (!currentItems.map((it) => it.id).contains(backupItem.id)) {
+        writeItem(backupItem);
+      }
+    }
+
     tempIsar.close(deleteFromDisk: true);
   }
 }

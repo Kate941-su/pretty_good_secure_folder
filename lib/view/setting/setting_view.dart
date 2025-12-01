@@ -39,31 +39,30 @@ class SettingView extends HookConsumerWidget {
             SettingsTile.navigation(
               onPressed: (_) async {
                 final exportedPath = await ref.read(dbHandlerProvider.notifier).exportFile();
-                SharePlus.instance.share(ShareParams(files: [XFile(exportedPath)]));
+                await SharePlus.instance.share(ShareParams(files: [XFile(exportedPath)]));
+                // Show Dialog
               },
               leading: Icon(Icons.upload),
-              title: Text('Data Export'),
+              title: Text('Make backup'),
             ),
             SettingsTile.navigation(
               onPressed: (_) async {
-                FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: false);
-
-                if (result != null) {
-                  File file = result.paths.map((path) => File(path!)).toList().first;
-                  ref.read(dbHandlerProvider.notifier).importFile(file.path);
-                } else {
-                  // User canceled the picker
+                try {
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(
+                    allowMultiple: false,
+                  ) ?? FilePickerResult([]);
+                  final paths = result.paths;
+                  if (paths.isNotEmpty) {
+                    ref.read(dbHandlerProvider.notifier).importFile(paths.first!);
+                  } else {
+                    // User canceled the picker
+                  }
+                } catch (e) {
+                  // TODO: Show alert
                 }
               },
-              leading: Icon(Icons.import_export),
-              title: Text('Data Import'),
-            ),
-            SettingsTile.navigation(
-              onPressed: (_) {
-                // Directory(path);
-              },
-              leading: Icon(Icons.garage),
-              title: Text('Debug(Delete)'),
+              leading: Icon(Icons.download),
+              title: Text('Import Items from backup'),
             ),
           ],
         ),

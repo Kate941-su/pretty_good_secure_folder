@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'global_package_info.g.dart';
 
 // Provider for storing measurements
-@riverpod
+@Riverpod(keepAlive: true)
 class GlobalPackageInfo extends _$GlobalPackageInfo {
 
   @override
