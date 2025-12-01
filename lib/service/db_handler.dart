@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:isar_community/isar.dart';
+import 'package:pretty_good_secure_folder/provider/vault_item_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -127,17 +128,25 @@ class DbHandler extends _$DbHandler {
     final currentItems = await readAllItem();
     final currentHolders = await readAllHolder();
 
+    var isNeedUpdate = false;
+
     // 3. backup items and holders if it is not duplicated
     for (var backupHolder in backupHolders) {
       if (!currentHolders.map((it) => it.id).contains(backupHolder.id)) {
-        writeHolder(backupHolder);
+        await writeHolder(backupHolder);
+        isNeedUpdate = true;
       }
     }
 
     for (var backupItem in backupItems) {
       if (!currentItems.map((it) => it.id).contains(backupItem.id)) {
-        writeItem(backupItem);
+        await writeItem(backupItem);
+        isNeedUpdate = true;
       }
+    }
+
+    if (isNeedUpdate) {
+      await ref.read(vaultItemHolderStateProvider.notifier).initialize();
     }
 
     tempIsar.close(deleteFromDisk: true);
